@@ -71,7 +71,23 @@ lazy.load({
   event = { 'BufReadPost', 'BufNewFile' },
   cmd = { 'Mason', 'MasonInstall', 'MasonUninstall', 'MasonLog', 'MasonUpdate' },
   keys = {
-    { 'n', '<leader>pm', function() vim.cmd('Mason') end, { desc = '[Panel] Mason' } }
+    { 'n', '<leader>pm', function()
+      vim.cmd('Mason')
+
+      -- Install in background
+      local registry = require('mason-registry')
+      registry.refresh(function()
+        for _, pkg_name in ipairs(config.mason) do
+          local ok, pkg = pcall(registry.get_package, pkg_name)
+          if ok and not pkg:is_installed() then
+            vim.schedule(function()
+              pkg:install()
+              vim.notify('[Mason] Auto installing ' .. pkg_name, vim.log.levels.INFO)
+            end)
+          end
+        end
+      end)
+    end, { desc = '[Panel] Mason' } }
   },
   setup = function()
     require('mason').setup({
@@ -98,6 +114,11 @@ lazy.load({
 vim.api.nvim_create_autocmd('LspAttach', {
   group = vim.api.nvim_create_augroup('LspKepmap', {}),
   callback = function(ev)
+    local client = vim.lsp.get_client_by_id(ev.data.client_id)
+    if client and client:supports_method('textDocument/inlayHint') then
+      -- Enable inline hint
+      vim.lsp.inlay_hint.enable(true, { bufnr = ev.buf })
+    end
     -- LSP keymaps
     vim.keymap.set('n', 'K', vim.lsp.buf.hover, { buffer = ev.buf, desc = 'LSP hover' })
     vim.keymap.set('n', '<leader>ch', vim.lsp.buf.hover, { buffer = ev.buf, desc = 'LSP hover' })
@@ -247,11 +268,11 @@ lazy.load({
         }
       },
       cmdline = {
-        completion = {
-          menu = {
-            auto_show = true,
-          }
-        },
+        -- completion = {
+        --   menu = {
+        --     auto_show = true,
+        --   }
+        -- },
       },
     })
   end
