@@ -5,20 +5,21 @@ lazy.load({
   plugin = 'https://github.com/folke/which-key.nvim',
   event = { 'User', pattern = 'VeryLazy' },
   setup = function()
-    require('which-key').add({
+    local whichkey = require('which-key')
+    whichkey.add({
       { '<leader>b', group = 'Buffer' },
       { '<leader>c', group = 'Code' },
-      { '<leader>f', group = 'File' },
+      { '<leader>f', group = 'Find', icon = '' },
+      { '<leader>s', group = 'Search', icon = '󰜎' },
       { '<leader>g', group = 'Git' },
-      { '<leader>q', group = 'Quit' },
-      { '<leader>s', group = 'Session' },
+      { '<leader>p', group = 'Panel', icon = '󰏖' },
       { '<leader>u', group = 'UI' },
-      { '<leader>p', group = 'Panel' },
+      { '<leader>q', group = 'Quit' },
     })
 
     vim.keymap.set('n', '<leader>?',
-      function() require('which-key').show({ global = false }) end,
-      { desc = 'which-key local keymap' }
+      function() whichkey.show({ global = false }) end,
+      { desc = 'Which-key local keymap' }
     )
   end
 })
