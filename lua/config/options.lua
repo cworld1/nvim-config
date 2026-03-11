@@ -64,7 +64,8 @@ vim.opt.formatoptions = vim.o.formatoptions:gsub('[ro]', '') -- break comment ne
 -- Clipboard
 vim.opt.clipboard = vim.env.SSH_CONNECTION and '' or 'unnamedplus'
 -- Check spelling
-vim.opt.spell = true
+-- This will be opened by `config/autocommands` for certain filetypes
+vim.opt.spell = false
 vim.opt.spelllang = 'en_us'
 vim.opt.spellsuggest = 'best,5' -- show only first best 5
 vim.opt.spelloptions = 'camel' --support CamelCase
