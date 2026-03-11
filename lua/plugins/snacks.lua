@@ -14,10 +14,11 @@ Snacks.setup({
   dashboard = { enabled = false },
   -- https://github.com/folke/snacks.nvim/blob/main/docs/explorer.md
   explorer = { enabled = true },
+  -- https://github.com/folke/snacks.nvim/blob/main/docs/image.md
+  image = { enabled = true },
   -- https://github.com/folke/snacks.nvim/blob/main/docs/indent.md
-  image = { enabled = false },
-  indent = { enabled = true },
-  input = { enabled = false },
+  indent = { enabled = false },
+  input = { enabled = true },
   notifier = { enabled = false },
 
   -- https://github.com/folke/snacks.nvim/blob/main/docs/picker.md
@@ -30,7 +31,7 @@ Snacks.setup({
         layout = {
           width = 0.8,
           height = 0.8,
-          border = 'none',
+          border = 'single',
           backdrop = false,
           box = 'horizontal',
           {
@@ -38,15 +39,15 @@ Snacks.setup({
             {
               win = 'input',
               height = 1,
-              border = 'single',
+              border = 'bottom',
               title = '{title} {live} {flags}',
               title_pos = 'left'
             },
-            { win = 'list', border = 'single' },
+            { win = 'list' },
           },
           {
             win = 'preview',
-            border = 'single',
+            border = 'left',
             title = '{preview:Preview}',
             title_pos = 'left',
             width = 0.65
@@ -57,18 +58,18 @@ Snacks.setup({
         layout = {
           width = 0.8,
           height = 0.9,
-          border = 'none',
+          border = 'single',
           backdrop = false,
           box = 'vertical',
           {
             win = 'input',
-            border = 'single',
+            border = 'bottom',
             height = 1,
             title = '{title} {live} {flags}',
             title_pos = 'left'
           },
-          { win = 'list', border = 'single', height = 8 },
-          { win = 'preview', border = 'single' },
+          { win = 'list', border = 'bottom', height = 8 },
+          { win = 'preview' },
         },
       },
     },
@@ -173,7 +174,6 @@ Snacks.setup({
             },
             on_win = function(win)
               update(win)
-              picker:show_preview()
             end,
           }
           rel:on('WinLeave', function()
@@ -184,6 +184,25 @@ Snacks.setup({
           rel:on('WinResized', function() update(preview_win) end)
           picker.preview.win = preview_win
           picker.main = preview_win.win
+
+	  -- Improve performance using debounce
+          local orig_show_preview = picker.show_preview
+          local timer = vim.uv.new_timer()
+          picker.show_preview = function(self)
+	    -- Stop rendering if new key is pressed
+            timer:stop()
+	    -- Wait 200ms to load
+            timer:start(200, 0, vim.schedule_wrap(function()
+              -- 安全护航：防止你在 60ms 内手速极快地按了 `q` 关掉面板导致抛出空指针异常
+              if self.preview and self.preview.win and self.preview.win:valid() then
+                orig_show_preview(self)
+              end
+            end))
+          end
+
+          -- 初始化面板时，手动呼叫一次以显示光标第一项的预览
+          picker:show_preview()
+          -- ==========================================================
         end,
         on_close = function(picker)
           vim.g.explorer_size = picker.layout.root:size()
