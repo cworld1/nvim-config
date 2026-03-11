@@ -1,7 +1,9 @@
 -- [Appearance]
 vim.opt.signcolumn = 'yes' -- always show sign column
-vim.opt.termguicolors = true -- enable 24-bit RGB colors
-vim.opt.winborder = 'single' -- add a border of ui
+if vim.fn.has('nvim-0.10') == 0 then
+  vim.opt.termguicolors = true -- enable 24-bit RGB colors
+end
+-- vim.opt.winborder = 'single' -- add a border of ui
 -- vim.opt.showmode = false -- Hide mode status
 -- Line edit
 vim.opt.cursorline = true -- highlight current line
