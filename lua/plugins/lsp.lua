@@ -1,69 +1,5 @@
 local lazy = require('libs.lazy')
--- [Config]
-local H = {}
-
--- (Env) mason
--- `:Mason` to see the list
-H.mason = {
-  -- LSP
-  'lua_ls', -- lua
-  'vtsls', -- typescript
-  'css-lsp', -- css
-  'marksman', -- markdown
-  'ty', -- python
-  -- Formatter
-  'prettier', -- front-end
-  'shfmt', -- shell
-  'ruff' -- python
-}
-
--- (Lsp) lspconfig
--- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md
-H.lsp = { 'lua_ls', 'vtsls', 'cssls', 'vue_ls', 'marksman', 'ty' }
-
--- (Formatter) conform
--- https://github.com/stevearc/conform.nvim#formatters
--- Or use `:help conform-formatters`
-H.conform = {
-  markdown = { 'prettier' },
-  vue = { 'prettier' },
-  python = { 'ruff' },
-  css = { 'prettier' },
-}
-
--- (Specific)
-local vue_language_server_path = vim.fn.stdpath('data') ..
-  '/mason/packages/vue-language-server/node_modules/@vue/language-server'
-local vue_plugin = {
-  name = '@vue/typescript-plugin',
-  location = vue_language_server_path,
-  languages = { 'vue' },
-  configNamespace = 'typescript',
-}
-vim.lsp.config('vtsls', {
-  settings = {
-    vtsls = {
-      tsserver = {
-        globalPlugins = {
-          vue_plugin,
-        },
-      },
-    },
-  },
-  filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
-})
-
-vim.g.markdown_fenced_languages = {
-  'sh', 'bash=sh',
-  'python', 'py=python',
-  'javascript', 'js=javascript',
-  'typescript', 'ts=typescript',
-  'html',
-  'css',
-  'json',
-  'lua',
-  'vim',
-}
+local config = require('plugins.lsp-config')
 
 -- [Dependencies] Load on run `Mason` command, key, and event
 lazy.load({
@@ -91,7 +27,6 @@ lazy.load({
   },
   setup = function()
     require('mason').setup({
-      ensure_installed = H.mason,
       ui = {
         icons = {
           package_installed = '✓',
@@ -108,7 +43,7 @@ lazy.load({
   plugin = 'https://github.com/neovim/nvim-lspconfig',
   event = { 'User', pattern = 'VeryLazy' },
   setup = function()
-    vim.lsp.enable(H.lsp)
+    vim.lsp.enable(config.lsp)
   end
 })
 vim.api.nvim_create_autocmd('LspAttach', {
@@ -160,7 +95,7 @@ lazy.load({
   },
   setup = function()
     require('conform').setup({
-      formatters_by_ft = H.conform,
+      formatters_by_ft = config.conform,
       format_after_save = {
         async = true,
         lsp_format = 'fallback',
@@ -201,7 +136,7 @@ lazy.load({
   end
 })
 
--- [Completion] Load on InsertEnter
+-- [Completion] Load on InsertEnter and CmdlineEnter
 lazy.load({
   plugin = { { src = 'https://github.com/Saghen/blink.cmp', version = vim.version.range('1') } },
   event = { 'InsertEnter', 'CmdlineEnter' },
