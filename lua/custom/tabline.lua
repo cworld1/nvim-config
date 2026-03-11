@@ -13,7 +13,6 @@ M.config = {
   -- the module will run the default `bdelete <buf_id>`.
   on_close = nil,
   -- icons: function(filename) -> string, string
-  ---@diagnostic disable-next-line: unused-local
   file_icons = function(filename)
     local ok, mini_icons = pcall(require, 'mini.icons')
     if ok then
@@ -66,18 +65,11 @@ M.setup = function(opts)
   -- Set initial show tabline value
   _G.SimpleTabline = M
   -- v:lua click handlers
-  ---@diagnostic disable-next-line: unused-local
-  _G.SimpleTablineSwitch = function(buf_id, clicks, button, mods)
-    if button == 'l' then
-      vim.api.nvim_set_current_buf(buf_id)
-    elseif button == 'r' then
-      _G.SimpleTabline.close_buffer(buf_id)
-    end
+  _G.SimpleTablineSwitch = function(buf_id, _, button, _)
+    if button == 'l' then vim.api.nvim_set_current_buf(buf_id) end
+    if button == 'r' then _G.SimpleTabline.close_buffer(buf_id) end
   end
-  ---@diagnostic disable-next-line: unused-local
-  _G.SimpleTablineClose = function(buf_id, clicks, button, mods)
-    _G.SimpleTabline.close_buffer(buf_id)
-  end
+  _G.SimpleTablineClose = function(buf_id, _, _, _) _G.SimpleTabline.close_buffer(buf_id) end
 
   if M.config.hide_single_tab then M.update_showtabline() else vim.o.showtabline = 2 end
   vim.o.tabline = '%! v:lua.SimpleTabline.render()'
