@@ -36,3 +36,7 @@ require('custom.surround').setup()
 
 -- Trigger VeryLazy event after all are loaded
 require('libs.lazy').trigger_verylazy()
+
+-- [Test]
+-- Startup test (use `PROF=1 nvim` to profile startup time)
+-- require('test.startup')
