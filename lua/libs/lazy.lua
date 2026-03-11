@@ -20,7 +20,7 @@ local function add_event_autocmd(events, loader)
 end
 
 --- Register a user command that loads the plugin on first use
-local function add_cmd_triggers(cmds, plugins, setup)
+local function add_cmd_triggers(cmds, loader)
   for _, cmd in ipairs(cmds) do
     vim.api.nvim_create_user_command(
       cmd,
