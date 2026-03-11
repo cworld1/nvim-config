@@ -1,4 +1,5 @@
 -- Auto switch input method
+-- Windows recommend AIMSwitcher: https://github.com/A-23187/AIMSwitcher
 local lazy = require('libs.lazy')
 
 lazy.load({
