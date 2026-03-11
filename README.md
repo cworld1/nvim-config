@@ -1,5 +1,7 @@
-# CWorld Neovim Config
+# CWorld NeoVim Config
 
+> [!NOTE]
+> Only support nvim 0.12 for this branch.
 ## About
 
 This repo hosts my [NeoVim](https://neovim.io/) configuration for Desktop environment.
@@ -12,10 +14,11 @@ This repo hosts my [NeoVim](https://neovim.io/) configuration for Desktop enviro
 ## Features
 
 - **Fast.** Less than **30ms** to start (Depends on SSD and CPU).
-- **Simple.** Run out of the box with only 11 plugins.
+- **Simple.** Run out of the box with only 12 plugins.
 - **Modern.** Pure `lua` config.
 - **Modular.** Easy to customize.
-- **Powerful.** Almost full functionality to code.
+- **Powerful.** Near full functionality to code.
+- **Beautiful.** Deeply integrated with `snacks.nvim`.
 
 ## Info
 
@@ -25,7 +28,7 @@ This repo hosts my [NeoVim](https://neovim.io/) configuration for Desktop enviro
 
 ## Installation
 
-Making sure you've installed [NeoVim](https://neovim.io/).
+Making sure you've installed [NeoVim 0.12](https://github.com/neovim/neovim/releases/nightly).
 
 _For Windows:_
 
@@ -41,6 +44,12 @@ git clone https://github.com/cworld1/nvim-config.git $XDG_CONFIG_HOME/nvim
 nvim
 ```
 
+Then:
+
+1. Open and wait for plugins download.
+2. Edit `lua/plugins/lsp-config.lua` for your needs.
+3. Reload NeoVim and use `:Mason` to install language dependencies.
+
 Then please having fun!
 
 ## Project Structure
@@ -49,7 +58,7 @@ Then please having fun!
 - `lua/custom`: custom tools & functions
 - `lua/libs`: shared libraries
 - `lua/plugins`: plugin configurations
-- `snippets/`: code snippets
+- `snippets/*`: code snippets
 - `init.lua`: entry point
 
 ## Contributions
