@@ -1,22 +1,14 @@
 -- Lightweight lazy loading implementation
 local M = {}
 
---- Load the plugin(s) and run optional setup
-local function do_load(plugins, setup)
-  for _, plugin in ipairs(plugins) do
-    vim.pack.add({ plugin })
-  end
-  if setup then setup() end
-end
-
---- Create an autocmd that fires once and calls `do_load`
-local function add_event_autocmd(events, plugins, setup)
+--- Create an autocmd that fires once and calls `loader`
+local function add_event_autocmd(events, loader)
   local event_name = events[1]
   local pattern = events[2] or events.pattern
 
   local opts = {
     once = true,
-    callback = function() do_load(plugins, setup) end,
+    callback = function() loader() end,
   }
   -- Add pattern for User events
   if event_name == 'User' and pattern then
@@ -34,10 +26,13 @@ local function add_cmd_triggers(cmds, plugins, setup)
       cmd,
       function(args)
         vim.api.nvim_del_user_command(cmd)
-        do_load(plugins, setup)
+        loader()
 
-        -- Re‑execute the original command with its arguments
+        -- Re-execute the original command with its arguments
         local cmd_string = cmd
+        if args.range > 0 then
+          cmd_string = args.line1 .. ',' .. args.line2 .. cmd_string
+        end
         if args.args and args.args ~= '' then
           cmd_string = cmd_string .. ' ' .. args.args
         end
@@ -50,7 +45,7 @@ local function add_cmd_triggers(cmds, plugins, setup)
 end
 
 --- Register a key‑map that loads the plugin on first press
-local function add_key_triggers(keys, plugins, setup, restore_keys)
+local function add_key_triggers(keys, loader, restore_keys)
   for _, key_cfg in ipairs(keys) do
     local mode = key_cfg[1] or key_cfg.mode or 'n'
     local lhs = key_cfg[2] or key_cfg.lhs
@@ -60,13 +55,14 @@ local function add_key_triggers(keys, plugins, setup, restore_keys)
     if lhs then
       vim.keymap.set(mode, lhs, function()
         vim.keymap.del(mode, lhs)
-        do_load(plugins, setup)
+        loader()
 
         if rhs then
           if type(rhs) == 'function' then
             rhs()
-          else
-            vim.cmd(rhs)
+          elseif type(rhs) == 'string' then
+            local k = vim.api.nvim_replace_termcodes(rhs, true, false, true)
+            vim.api.nvim_feedkeys(k, 'm', false)
           end
           if restore_keys then
             vim.keymap.set(mode, lhs, rhs, opts)
@@ -81,11 +77,11 @@ local function add_key_triggers(keys, plugins, setup, restore_keys)
 end
 
 --- Autocmd for filetype triggers
-local function add_ft_autocmd(fts, plugins, setup)
+local function add_ft_autocmd(fts, loader)
   vim.api.nvim_create_autocmd('FileType', {
     pattern = fts,
     once = true,
-    callback = function() do_load(plugins, setup) end,
+    callback = function() loader() end,
   })
 end
 
@@ -107,22 +103,33 @@ function M.load(config)
   -- end
   if type(plugins) == 'string' then plugins = { plugins }
   elseif plugins == nil then plugins = {} end
+  
+  -- Load the plugin(s) and run optional setup
+  local loaded = false
+  local function do_load()
+    if loaded then return end
+    loaded = true
+    for _, plugin in ipairs(plugins) do
+      vim.pack.add({ plugin })
+    end
+    if config.setup then config.setup() end
+  end
 
   -- Triggers
   if config.event then
     local ev = type(config.event) == 'string' and { config.event } or config.event
-    add_event_autocmd(ev, plugins, config.setup)
+    add_event_autocmd(ev, do_load)
   end
   if config.cmd then
     local cmds = type(config.cmd) == 'string' and { config.cmd } or config.cmd
-    add_cmd_triggers(cmds, plugins, config.setup)
+    add_cmd_triggers(cmds, do_load)
   end
   if config.keys then
-    add_key_triggers(config.keys, plugins, config.setup, config.restore_keys ~= false)
+    add_key_triggers(config.keys, do_load, config.restore_keys ~= false)
   end
   if config.ft then
     local fts = type(config.ft) == 'string' and { config.ft } or config.ft
-    add_ft_autocmd(fts, plugins, config.setup)
+    add_ft_autocmd(fts, do_load)
   end
 end
 
@@ -135,6 +142,18 @@ M.trigger_verylazy = function()
         vim.api.nvim_exec_autocmds('User', { pattern = 'VeryLazy' })
       end)
     end,
+  })
+
+  -- Headless mode
+  vim.api.nvim_create_autocmd('VimEnter', {
+    once = true,
+    callback = function()
+      if #vim.api.nvim_list_uis() == 0 then
+        vim.schedule(function()
+          vim.api.nvim_exec_autocmds('User', { pattern = 'VeryLazy' })
+        end)
+      end
+    end
   })
 end
 
