@@ -14,15 +14,13 @@ local config = {
     'PreProc', 'Type', 'Underlined', 'Todo', 'String', 'Function',
     'Conditional', 'Repeat', 'Operator', 'Structure',
     -- Append from the origin list
-    'Folded',
+    'Folded', -- Fold text
+    'NormalFloat', -- Float window
   },
 
   extra_groups = {
-    -- NeoTree
-    -- 'NeoTreeNormal', 'NeoTreeNormalNC',
-    -- BufferLine
-    -- 'Tabline', 'WildMenu', 'BufferLineFill',
     -- Snacks
+    'SnacksNormal', 'SnacksBackdrop',
     'SnacksPickerInput', 'SnacksPickerInputBorder',
     'SnacksPickerList', 'SnacksPickerListBorder',
   },
