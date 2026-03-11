@@ -29,6 +29,7 @@ require('custom.tabline').setup({
   file_icons = function(name) return Snacks.util.icon(name, 'file') end,
   icons = { close = icons.basic.close, modify = icons.basic.modify }
 })
+require('custom.sudo').setup()
 -- Edit
 require('custom.pairs').setup()
 require('custom.surround').setup()
