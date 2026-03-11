@@ -12,8 +12,11 @@ lazy.load({
 })
 
 -- [Icon]
-vim.pack.add({ 'https://github.com/nvim-mini/mini.icons' })
-require('mini.icons').setup()
+lazy.load({
+  plugin = 'https://github.com/nvim-mini/mini.icons',
+  event = { 'User', pattern = 'VeryLazy' },
+  setup = function() require('mini.icons').setup() end
+})
 
 -- [Sticky scroll]
 lazy.load({
