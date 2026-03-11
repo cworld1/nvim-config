@@ -15,14 +15,16 @@ local config = {
     'Conditional', 'Repeat', 'Operator', 'Structure',
     -- Append from the origin list
     'Folded', -- Fold text
-    'NormalFloat', -- Float window
   },
 
   extra_groups = {
     -- Snacks
-    'SnacksNormal', 'SnacksBackdrop',
-    'SnacksPickerInput', 'SnacksPickerInputBorder',
+    'SnacksNormalNC', 'SnacksNormal',
+    'SnacksPicker', 'SnacksPickerBorder',
+    'SnacksPickerBox', 'SnacksPickerBoxBorder',
     'SnacksPickerList', 'SnacksPickerListBorder',
+    'SnacksPickerInput', 'SnacksPickerInputBorder',
+    'SnacksPickerPreview', 'SnacksPickerPreviewBorder',
   },
 
   exclude_groups = {},

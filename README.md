@@ -2,6 +2,7 @@
 
 > [!NOTE]
 > Only support nvim 0.12 for this branch.
+
 ## About
 
 This repo hosts my [NeoVim](https://neovim.io/) configuration for Desktop environment.

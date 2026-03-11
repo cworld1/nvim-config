@@ -21,6 +21,15 @@ Snacks.setup({
   input = { enabled = true },
   notifier = { enabled = false },
 
+  -- https://github.com/folke/snacks.nvim/blob/main/docs/lazygit.md
+  lazygit = {
+    win = {
+      wo = {
+        winhighlight =
+        'FloatBorder:SnacksPickerBorder,Normal:SnacksNormal,NormalNC:SnacksNormalNC,WinBar:SnacksWinBar,WinBarNC:SnacksWinBarNC,FloatTitle:SnacksTitle,FloatFooter:SnacksFooter,WinSeparator:SnacksWinSeparator'
+      },
+    }
+  },
   -- https://github.com/folke/snacks.nvim/blob/main/docs/picker.md
   picker = {
     enabled = true,
@@ -165,6 +174,9 @@ Snacks.setup({
             border = 'single',
             backdrop = false,
             show = show,
+            wo = {
+              winhighlight = 'FloatBorder:SnacksPickerBorder,Normal:SnacksNormal,NormalNC:SnacksNormalNC,WinBar:SnacksWinBar,WinBarNC:SnacksWinBarNC,FloatTitle:SnacksTitle,FloatFooter:SnacksFooter,WinSeparator:SnacksWinSeparator'
+            },
             bo = {
               filetype = 'snacks_float_preview',
               buftype = 'nofile',
@@ -185,24 +197,21 @@ Snacks.setup({
           picker.preview.win = preview_win
           picker.main = preview_win.win
 
-	  -- Improve performance using debounce
+          -- Improve performance using debounce
           local orig_show_preview = picker.show_preview
           local timer = vim.uv.new_timer()
           picker.show_preview = function(self)
-	    -- Stop rendering if new key is pressed
+            -- Stop rendering if new key is pressed
             timer:stop()
-	    -- Wait 200ms to load
+            -- Wait 200ms to load
             timer:start(200, 0, vim.schedule_wrap(function()
-              -- 安全护航：防止你在 60ms 内手速极快地按了 `q` 关掉面板导致抛出空指针异常
               if self.preview and self.preview.win and self.preview.win:valid() then
                 orig_show_preview(self)
               end
             end))
           end
 
-          -- 初始化面板时，手动呼叫一次以显示光标第一项的预览
           picker:show_preview()
-          -- ==========================================================
         end,
         on_close = function(picker)
           vim.g.explorer_size = picker.layout.root:size()
