@@ -12,7 +12,7 @@ M.config = {
   -- the module will NOT perform the default `bdelete`. If it returns false/nil,
   -- the module will run the default `bdelete <buf_id>`.
   on_close = nil,
-  -- icons: function(filename) -> string, string
+  -- file_icons: function(filename) -> string, string
   file_icons = function(filename)
     local ok, mini_icons = pcall(require, 'mini.icons')
     if ok then
@@ -63,19 +63,28 @@ M.setup = function(opts)
   M.config = vim.tbl_deep_extend('force', M.config, opts or {})
 
   -- Set initial show tabline value
-  _G.SimpleTabline = M
+  _G.Tabline = M
   -- v:lua click handlers
-  _G.SimpleTablineSwitch = function(buf_id, _, button, _)
+  _G.TablineSwitch = function(buf_id, _, button, _)
     if button == 'l' then vim.api.nvim_set_current_buf(buf_id) end
-    if button == 'r' then _G.SimpleTabline.close_buffer(buf_id) end
+    if button == 'r' then _G.Tabline.close_buffer(buf_id) end
   end
-  _G.SimpleTablineClose = function(buf_id, _, _, _) _G.SimpleTabline.close_buffer(buf_id) end
+  _G.TablineClose = function(buf_id, _, _, _) _G.Tabline.close_buffer(buf_id) end
+  -- Scroll callback of mouse click on the left and right arrow
+  _G.TablineScrollLeft = function()
+    M.viewport_start = math.max(1, M.viewport_start - 1)
+    vim.cmd('redrawtabline')
+  end
+  _G.TablineScrollRight = function()
+    M.viewport_start = M.viewport_start + 1
+    vim.cmd('redrawtabline')
+  end
 
   if M.config.hide_single_tab then M.update_showtabline() else vim.o.showtabline = 2 end
-  vim.o.tabline = '%! v:lua.SimpleTabline.render()'
+  vim.o.tabline = '%! v:lua.Tabline.render()'
 
   M.create_highlights()
-  local group = vim.api.nvim_create_augroup('SimpleTabline', { clear = true })
+  local group = vim.api.nvim_create_augroup('Tabline', { clear = true })
   vim.api.nvim_create_autocmd('ColorScheme', { group = group, callback = M.create_highlights })
   -- Update showtabline when buffers change
   if M.config.hide_single_tab then
@@ -158,8 +167,8 @@ M.format_tab = function(buf_id, is_current)
   local close_icon = is_modified and M.config.icons.modify or M.config.icons.close
   local btn_hl = bg_hl
 
-  local switch = '%' .. buf_id .. '@v:lua.SimpleTablineSwitch@'
-  local close = '%' .. buf_id .. '@v:lua.SimpleTablineClose@'
+  local switch = '%' .. buf_id .. '@v:lua.TablineSwitch@'
+  local close = '%' .. buf_id .. '@v:lua.TablineClose@'
 
   local close_btn = '%#' .. btn_hl .. '#' .. close .. close_icon .. '%X '
 
@@ -189,6 +198,8 @@ M.render = function()
   end
 
   if #tabs == 0 then return '' end
+  if M.viewport_start > #tabs then M.viewport_start = #tabs end
+  if M.viewport_start < 1 then M.viewport_start = 1 end
   if current_idx == 0 then current_idx = M.viewport_start end
 
   -- Verify window width
@@ -197,8 +208,9 @@ M.render = function()
   end
 
   local max_width = vim.o.columns
-  local left_ind = '%#TablineHidden#  '
-  local right_ind = '%#TablineHidden#  '
+  local left_ind = '%0@v:lua.TablineScrollLeft@%#TablineFill#  %X'
+  local right_ind = '%0@v:lua.TablineScrollRight@%#TablineFill#  %X'
+
   local ind_width = 3
 
   -- Calc tabs started from start_idx
