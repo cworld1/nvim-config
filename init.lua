@@ -13,7 +13,7 @@ require('plugins.lsp')
 require('plugins.tool')
 local Snacks = require('plugins.snacks')
 -- Input method swtich for non-English users
-require('plugins.im-select')
+-- require('plugins.im-select')
 
 -- [Custom]
 -- UI
