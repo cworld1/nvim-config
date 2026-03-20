@@ -177,12 +177,26 @@ H.apply_config = function(config)
 end
 
 H.create_autocommands = function()
-  local gr = vim.api.nvim_create_augroup('MiniPairs', {})
+  local gr = vim.api.nvim_create_augroup('MiniPairs', { clear = true })
   vim.api.nvim_create_autocmd('FileType', {
     group = gr,
-    pattern = { 'TelescopePrompt', 'fzf' },
+    pattern = { 'TelescopePrompt', 'fzf', 'snacks_picker_input' },
     callback = function() vim.b.minipairs_disable = true end,
     desc = 'Disable locally'
+  })
+
+  -- Add memory cleanup hook to solve the problem of dead Buffer resident memory
+  vim.api.nvim_create_autocmd('BufWipeout', {
+    group = gr,
+    callback = function(args)
+      local buf = args.buf
+      for _, mode in ipairs({ 'i', 'c', 't' }) do
+        if H.registered_pairs[mode] and H.registered_pairs[mode][buf] then
+          H.registered_pairs[mode][buf] = nil
+        end
+      end
+    end,
+    desc = 'Clear memory leak on buffer wipeout'
   })
 end
 
