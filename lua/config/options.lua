@@ -1,6 +1,5 @@
 local utils = require('libs.utils')
 -- [Appearance]
-vim.opt.signcolumn = 'yes' -- always show sign column
 if utils.is_compatible_version('0.10') then
   vim.opt.termguicolors = true -- enable 24-bit RGB colors
 end
@@ -27,6 +26,7 @@ vim.opt.breakindent = true -- maintain indent on wrap
 vim.opt.winminwidth = 5 -- prevent tiny splits
 
 -- [Editor]
+-- vim.opt.cmdheight = 0 -- auto hide status line when cmd
 vim.opt.fileformat = 'unix'
 vim.opt.mouse = 'a' -- enable mouse in all modes
 vim.opt.laststatus = 3 -- global satusline (once you add one)
@@ -71,5 +71,8 @@ vim.opt.clipboard = vim.env.SSH_CONNECTION and '' or 'unnamedplus'
 vim.opt.spell = false
 vim.opt.spelllang = 'en_us'
 vim.opt.spellsuggest = 'best,5' -- show only first best 5
-vim.opt.spelloptions = 'camel' --support CamelCase
 -- vim.opt.spelloptions = 'underscore'
+vim.opt.spelloptions = 'camel' --support CamelCase
+-- UI2
+local ok, ui2 = pcall(require, 'vim._core.ui2')
+if ok then ui2.enable({ enable = true }) end
