@@ -350,7 +350,6 @@ local key = {
   { '[[', function() Snacks.words.jump(-vim.v.count1) end, desc = 'Prev reference', mode = { 'n', 't' } },
   {
     '<leader>pN',
-    desc = 'Neovim News',
     function()
       Snacks.win({
         file = vim.api.nvim_get_runtime_file('doc/news.txt', false)[1],
@@ -365,6 +364,7 @@ local key = {
         },
       })
     end,
+    desc = 'Neovim News',
   }
 }
 

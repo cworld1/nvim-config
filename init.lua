@@ -13,7 +13,7 @@ require('plugins.lsp')
 require('plugins.tool')
 local Snacks = require('plugins.snacks')
 -- Input method swtich for non-English users
--- require('plugins.im-select')
+require('plugins.im-select')
 
 -- [Custom]
 -- UI
@@ -22,7 +22,7 @@ require('custom.transparent').setup({ auto_enable = true })
 local icons = require('libs.icons')
 require('custom.tabline').setup({
   hide_single_tab = true,
-  on_close = function(buf_id) Snacks.bufdelete(buf_id) end,
+  on_close = function(buf_id) Snacks.bufdelete(buf_id, { wipe = true }) end,
   file_icons = function(name) return Snacks.util.icon(name, 'file') end,
   icons = { close = icons.basic.close, modify = icons.basic.modify }
 })
