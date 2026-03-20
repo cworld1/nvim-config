@@ -1,5 +1,5 @@
-local M = {}
 local utils = require('libs.utils')
+local M = {}
 
 local aug = vim.api.nvim_create_augroup('sudo_save', { clear = true })
 
@@ -49,6 +49,7 @@ M.do_sudo_save = function(buf, path)
 end
 
 M.setup = function()
+  -- Do not load on Windows
   if utils.is_windows() then return end
 
   vim.api.nvim_create_autocmd({ 'BufReadPost', 'BufNewFile' }, {
