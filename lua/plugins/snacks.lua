@@ -1,5 +1,6 @@
 ---@module 'snacks'
 
+local utils = require('libs.utils')
 local icons = require('libs.icons')
 local lazy = require('libs.lazy')
 
@@ -398,7 +399,7 @@ lazy.load({
     -- end
 
     -- Override print to use snacks for `:=` command
-    if vim.fn.has('nvim-0.11') == 1 then
+    if utils.is_compatible_version('0.11') then
       vim._print = function(_, ...)
         dd(...)
       end
