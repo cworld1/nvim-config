@@ -18,9 +18,15 @@ Snacks.setup({
   -- https://github.com/folke/snacks.nvim/blob/main/docs/image.md
   image = { enabled = true },
   -- https://github.com/folke/snacks.nvim/blob/main/docs/indent.md
-  indent = { enabled = false },
-  input = { enabled = true },
+  indent = { enabled = true },
+  -- https://github.com/folke/snacks.nvim/blob/main/docs/input.md
+  input = { enabled = false },
+  -- https://github.com/folke/snacks.nvim/blob/main/docs/notifier.md
   notifier = { enabled = false },
+  -- https://github.com/folke/snacks.nvim/blob/main/docs/scope.md
+  scope = { enabled = true },
+  -- https://github.com/folke/snacks.nvim/blob/main/docs/words.md
+  words = { enabled = true },
 
   -- https://github.com/folke/snacks.nvim/blob/main/docs/lazygit.md
   lazygit = {
@@ -31,6 +37,23 @@ Snacks.setup({
       },
     }
   },
+  -- https://github.com/folke/snacks.nvim/blob/main/docs/scroll.md
+  scroll = {
+    enabled = true,
+    animate = {
+      duration = { step = 10, total = 80 },
+      easing = 'linear',
+    },
+  },
+  -- https://github.com/folke/snacks.nvim/blob/main/docs/statuscolumn.md
+  statuscolumn = {
+    enabled = true,
+    folds = {
+      open = true, -- show open fold icons
+      git_hl = true, -- use Git Signs hl for fold icons
+    },
+  },
+
   -- https://github.com/folke/snacks.nvim/blob/main/docs/picker.md
   picker = {
     enabled = true,
@@ -138,9 +161,13 @@ Snacks.setup({
             preview = false,
             layout = {
               position = 'left',
-              width = (vim.g.explorer_size or { width = 30 }).width,
+              width = (vim.g.explorer_size or { width = 26 }).width,
               box = 'vertical',
-              { win = 'list', border = 'none' },
+              { win = 'list' },
+              {
+                win = 'input',
+                height = 1,
+              },
               { win = 'preview', title = '{preview}', height = 0.4, border = 'top' },
             },
           }
@@ -150,7 +177,7 @@ Snacks.setup({
           local show = true
           local gap = 1
           local clamp_width = function(value)
-            return math.max(20, math.min(42, value))
+            return math.max(20, math.min(32, value))
           end
           local position = picker.resolved_layout.layout.position
           local rel = picker.layout.root
@@ -185,9 +212,7 @@ Snacks.setup({
               swapfile = false,
               undofile = false,
             },
-            on_win = function(win)
-              update(win)
-            end,
+            on_win = function(win) update(win) end,
           }
           rel:on('WinLeave', function()
             vim.schedule(function()
@@ -200,12 +225,12 @@ Snacks.setup({
 
           -- Improve performance using debounce
           local orig_show_preview = picker.show_preview
-          local timer = vim.uv.new_timer()
+          picker._preview_timer = vim.uv.new_timer()
           picker.show_preview = function(self)
             -- Stop rendering if new key is pressed
-            timer:stop()
+            self._preview_timer:stop()
             -- Wait 200ms to load
-            timer:start(200, 0, vim.schedule_wrap(function()
+            self._preview_timer:start(200, 0, vim.schedule_wrap(function()
               if self.preview and self.preview.win and self.preview.win:valid() then
                 orig_show_preview(self)
               end
@@ -215,11 +240,18 @@ Snacks.setup({
           picker:show_preview()
         end,
         on_close = function(picker)
+          if picker._preview_timer then
+            picker._preview_timer:stop()
+            if not picker._preview_timer:is_closing() then
+              picker._preview_timer:close()
+            end
+            picker._preview_timer = nil
+          end
           vim.g.explorer_size = picker.layout.root:size()
           picker.preview.win:close()
         end,
         actions = {
-          --[[Override]]
+          -- Override
           toggle_preview = function(picker) picker.preview.win:toggle() end,
         },
         -- win = {
@@ -250,28 +282,6 @@ Snacks.setup({
       }
     }
   },
-  quickfile = { enabled = true },
-  scope = { enabled = true },
-  -- https://github.com/folke/snacks.nvim/blob/main/docs/scroll.md
-  scroll = {
-    enabled = true,
-    animate = {
-      duration = { step = 10, total = 50 },
-      easing = 'linear',
-    },
-  },
-  -- https://github.com/folke/snacks.nvim/blob/main/docs/statuscolumn.md
-  statuscolumn = {
-    enabled = true,
-    folds = {
-      open = true, -- show open fold icons
-      git_hl = true, -- use Git Signs hl for fold icons
-    },
-  },
-  -- https://github.com/folke/snacks.nvim/blob/main/docs/words.md
-  words = { enabled = true },
-  -- https://github.com/folke/snacks.nvim/blob/main/docs/styles.md
-  styles = {}
 })
 
 local key = {
@@ -361,8 +371,8 @@ local key = {
 -- Implement key registration
 local set_keys = function(keys)
   for _, k in ipairs(keys) do
-    local lhs = k[1]
-    local rhs = k[2]
+    local lhs, rhs = k[1], k[2]
+
     if not lhs or not rhs then goto continue end
 
     local opts = {}
@@ -374,13 +384,10 @@ local set_keys = function(keys)
 
     local mode = k.mode or 'n'
     if type(mode) == 'table' then
-      for _, m in ipairs(mode) do
-        vim.keymap.set(m, lhs, rhs, opts)
-      end
+      for _, m in ipairs(mode) do vim.keymap.set(m, lhs, rhs, opts) end
     else
       vim.keymap.set(mode, lhs, rhs, opts)
     end
-
     ::continue::
   end
 end
@@ -391,18 +398,11 @@ lazy.load({
     set_keys(key)
 
     -- Setup some globals for debugging (lazy-loaded)
-    _G.dd = function(...)
-      Snacks.debug.inspect(...)
-    end
-    -- _G.bt = function()
-    --   Snacks.debug.backtrace()
-    -- end
-
+    _G.dd = function(...) Snacks.debug.inspect(...) end
+    -- _G.bt = function() Snacks.debug.backtrace() end
     -- Override print to use snacks for `:=` command
     if utils.is_compatible_version('0.11') then
-      vim._print = function(_, ...)
-        dd(...)
-      end
+      vim._print = function(_, ...) dd(...) end
     else
       vim.print = _G.dd
     end
@@ -416,8 +416,8 @@ lazy.load({
     Snacks.toggle.option('conceallevel',
       { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2 }):map('<leader>uc')
     Snacks.toggle.treesitter():map('<leader>uT')
-    Snacks.toggle.option('background', { off = 'light', on = 'dark', name = 'Dark Background' })
-      :map('<leader>ub')
+    Snacks.toggle.option('background', { off = 'light', on = 'dark', name = 'Dark Background' }):map(
+      '<leader>ub')
     Snacks.toggle.inlay_hints():map('<leader>uh')
     Snacks.toggle.indent():map('<leader>ug')
     Snacks.toggle.dim():map('<leader>uD')
