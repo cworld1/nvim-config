@@ -1,5 +1,9 @@
 -- [Init]
 -- require('test.startup') -- startup test using `PROF=1 nvim`
+require('libs.lazy').setup({
+  statistic = true,
+  trigger_verylazy = true
+}) -- statistics must be set before plugins
 require('custom.theme').setup() -- theme must be set before plugins
 
 -- [Config]
@@ -35,6 +39,3 @@ require('custom.statusline').setup({
 require('custom.pairs').setup()
 require('custom.surround').setup()
 require('custom.sudo').setup()
-
--- Trigger VeryLazy event after all are loaded
-require('libs.lazy').trigger_verylazy()
