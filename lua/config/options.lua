@@ -74,5 +74,6 @@ vim.opt.spellsuggest = 'best,5' -- show only first best 5
 -- vim.opt.spelloptions = 'underscore'
 vim.opt.spelloptions = 'camel' --support CamelCase
 -- UI2
+-- https://neovim.io/doc/user/lua/#_ui2
 local ok, ui2 = pcall(require, 'vim._core.ui2')
 if ok then ui2.enable({ enable = true }) end
