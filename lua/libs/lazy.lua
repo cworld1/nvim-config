@@ -172,7 +172,7 @@ function M.report_plugin_load()
     stats.loaded, total, elapsed))
 end
 
-M.setup = function(opts)
+function M.setup(opts)
   M.config = vim.tbl_deep_extend('force', M.config, opts or {})
   if vim.fn.argc() ~= 0 then M.config.statistic = false end
 
