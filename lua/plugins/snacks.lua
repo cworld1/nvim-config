@@ -292,7 +292,6 @@ local key = {
   { '<leader>fb', function() Snacks.picker.buffers() end, desc = 'Buffers' },
   { '<leader>ff', function() Snacks.picker.git_files() end, desc = 'Find git files' },
   { '<leader>fp', function() Snacks.picker.projects() end, desc = 'Projects' },
-  { '<leader>fr', function() Snacks.picker.registers() end, desc = 'Registers' },
   { '<leader>fr', function() Snacks.picker.recent() end, desc = 'Recent' },
   { '<leader>fl', function() Snacks.picker.lines() end, desc = 'Buffer lines' },
   -- Grep
@@ -302,6 +301,7 @@ local key = {
   -- Search
   { '<leader>sc', function() Snacks.picker.command_history() end, desc = 'Command history' },
   { '<leader>s/', function() Snacks.picker.search_history() end, desc = 'Search history' },
+  { '<leader>sr', function() Snacks.picker.registers() end, desc = 'Registers' },
   -- { '<leader>sn', function() Snacks.picker.notifications() end, desc = 'Notification history' },
   { '<leader>sa', function() Snacks.picker.autocmds() end, desc = 'Autocmds' },
   { '<leader>sC', function() Snacks.picker.commands() end, desc = 'Commands' },
