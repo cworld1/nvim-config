@@ -1,5 +1,5 @@
 -- [Init]
--- require('test.startup') -- startup test using `PROF=1 nvim`
+-- require('test.startup-profiler') -- startup test using `PROF=1 nvim`
 require('libs.lazy').setup({
   statistic = true,
   trigger_verylazy = true
