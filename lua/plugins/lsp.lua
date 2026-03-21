@@ -7,9 +7,9 @@ lazy.load({
   event = { 'BufReadPost', 'BufNewFile' },
   cmd = { 'Mason', 'MasonInstall', 'MasonUninstall', 'MasonLog', 'MasonUpdate' },
   keys = {
-    { 'n', '<leader>pm', function()
+    { 'n', '<leader>pm', function() vim.cmd('Mason') end, { desc = '[Panel] Mason' } },
+    { 'n', '<leader>pM', function()
       vim.cmd('Mason')
-
       -- Install in background
       local registry = require('mason-registry')
       registry.refresh(function()
@@ -23,7 +23,7 @@ lazy.load({
           end
         end
       end)
-    end, { desc = '[Panel] Mason' } }
+    end, { desc = '[Panel] Mason with install' } }
   },
   setup = function()
     require('mason').setup({
