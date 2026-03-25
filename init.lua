@@ -45,7 +45,7 @@ require('custom.git').setup({
   blame = {
     enabled = true,
     msg_template = '   <summary>, <author> (<date>)',
-    msg_not_committed = '   Not Committed Yet',
+    msg_not_committed = '',
     delay = 1000,
     max_summary_length = 30
   }

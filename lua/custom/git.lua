@@ -163,14 +163,13 @@ end
 local function fetch_blame(buf)
   if not vim.api.nvim_buf_is_valid(buf) then return end
 
-  local filepath = vim.api.nvim_buf_get_name(buf)
-  if filepath == '' or filepath:match('^[%w%+%.%-]+://') then return end
-  if vim.tbl_contains(M.config.blame.ignored_ft, vim.bo[buf].filetype) then return end
+  local path = vim.api.nvim_buf_get_name(buf)
+  if path == '' or vim.tbl_contains(M.config.blame.ignored_ft, vim.bo[buf].filetype) then return end
 
-  local root = M.config.get_git_root(filepath)
+  local root = M.config.get_git_root(path)
   if not root then return end
 
-  local stats = vim.uv.fs_stat(filepath)
+  local stats = vim.uv.fs_stat(path)
   if stats and stats.size > 1.5 * 1024 * 1024 then return end
 
   local tick = vim.api.nvim_buf_get_changedtick(buf)
@@ -179,7 +178,7 @@ local function fetch_blame(buf)
 
   local stdin = table.concat(lines, '\n') .. '\n'
   local cmd = { 'git', '--no-pager', '-C', root, 'blame', '-b', '-p', '-w', '--date', 'unix',
-    '--contents', '-', filepath }
+    '--contents', '-', path }
 
   local st = b_state[buf] or {}
   b_state[buf] = st
@@ -198,11 +197,11 @@ local function fetch_blame(buf)
   end)
 end
 
-local function queue_fetch(bufnr)
-  if not M.config.blame.enabled or not vim.api.nvim_buf_is_valid(bufnr) then return end
-  if fetch_timers[bufnr] then fetch_timers[bufnr]:stop() else fetch_timers[bufnr] = vim.uv.new_timer() end
-  fetch_timers[bufnr]:start(M.config.blame.delay, 0,
-    vim.schedule_wrap(function() fetch_blame(bufnr) end))
+local function queue_fetch(buf)
+  if not M.config.blame.enabled or not vim.api.nvim_buf_is_valid(buf) then return end
+  if fetch_timers[buf] then fetch_timers[buf]:stop() else fetch_timers[buf] = vim.uv.new_timer() end
+  fetch_timers[buf]:start(M.config.blame.delay, 0,
+    vim.schedule_wrap(function() fetch_blame(buf) end))
 end
 
 function M.toggle_blame()
