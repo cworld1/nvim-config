@@ -40,6 +40,13 @@ require('custom.pairs').setup()
 require('custom.surround').setup()
 require('custom.sudo').setup()
 require('custom.git').setup({
-  stage_action = Snacks.picker.actions.git_stage,
-  get_git_root = Snacks.git.get_root
+  get_git_root = Snacks.git.get_root,
+  stage = { action = Snacks.picker.actions.git_stage },
+  blame = {
+    enabled = true,
+    msg_template = '   <summary>, <author> (<date>)',
+    msg_not_committed = '   Not Committed Yet',
+    delay = 1000,
+    max_summary_length = 30
+  }
 })
