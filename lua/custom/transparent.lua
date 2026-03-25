@@ -33,9 +33,13 @@ M.config = {
 }
 
 M.setup = function(opts)
-  opts = opts or {}
   M.config = vim.tbl_extend('force', M.config, opts)
+
   M.cache_path = vim.fn.stdpath('data') .. package.config:sub(1, 1) .. 'transparent_state'
+  -- Ensure that the parent directory of the cache file exist
+  -- to prevent write crashes due to environment differences
+  local dir = vim.fn.fnamemodify(M.cache_path, ':h')
+  if vim.fn.isdirectory(dir) == 0 then vim.fn.mkdir(dir, 'p') end
   M.cache_read() -- load state on startup
 
   if opts.auto_enable then
@@ -56,6 +60,15 @@ M.setup = function(opts)
       end
     end,
   })
+
+  -- [Commands & Keymaps]
+  vim.api.nvim_create_user_command('TransparentEnable', M.enable,
+    { desc = 'Enable background transparency' })
+  vim.api.nvim_create_user_command('TransparentDisable', M.disable,
+    { desc = 'Disable background transparency' })
+  vim.api.nvim_create_user_command('TransparentToggle', M.toggle,
+    { desc = 'Toggle background transparency' })
+  vim.keymap.set('n', '<leader>ut', M.toggle, { desc = 'Toggle transparent background' })
 end
 
 -- [Cache Module] persist state
@@ -64,10 +77,6 @@ M.cache_read = function()
   vim.g.bg_transparent = ok and #data > 0 and vim.trim(data[1]) == 'true'
 end
 M.cache_write = function()
-  -- Ensure that the parent directory of the cache file exist
-  -- to prevent write crashes due to environment differences
-  local dir = vim.fn.fnamemodify(M.cache_path, ':h')
-  if vim.fn.isdirectory(dir) == 0 then vim.fn.mkdir(dir, 'p') end
   vim.fn.writefile({ tostring(vim.g.bg_transparent) }, M.cache_path)
 end
 
@@ -83,7 +92,6 @@ M.clear_group = function(group)
         if M.hl_cache[g] == nil then
           M.hl_cache[g] = vim.deepcopy(prev)
         end
-
         -- Set transparent
         if prev.bg or prev.ctermbg then
           prev.bg, prev.ctermbg = 'NONE', 'NONE'
@@ -157,25 +165,8 @@ function M.disable()
 end
 
 function M.toggle(opt)
-  if opt ~= nil then
-    vim.g.bg_transparent = opt
-  else
-    vim.g.bg_transparent = not vim.g.bg_transparent
-  end
-  if vim.g.bg_transparent then
-    M.enable()
-  else
-    M.disable()
-  end
+  vim.g.bg_transparent = opt ~= nil and opt or not vim.g.bg_transparent
+  if vim.g.bg_transparent then M.enable() else M.disable() end
 end
-
--- [Commands & Keymaps]
-vim.api.nvim_create_user_command('TransparentEnable', M.enable,
-  { desc = 'Enable background transparency' })
-vim.api.nvim_create_user_command('TransparentDisable', M.disable,
-  { desc = 'Disable background transparency' })
-vim.api.nvim_create_user_command('TransparentToggle', M.toggle,
-  { desc = 'Toggle background transparency' })
-vim.keymap.set('n', '<leader>ut', M.toggle, { desc = 'Toggle transparent background' })
 
 return M
