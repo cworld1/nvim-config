@@ -47,13 +47,22 @@ lazy.load({
   end
 })
 vim.api.nvim_create_autocmd('LspAttach', {
-  group = vim.api.nvim_create_augroup('LspKepmap', {}),
+  group = vim.api.nvim_create_augroup('UserLspConfig', {}),
   callback = function(ev)
+    -- Enable inline hint
     local client = vim.lsp.get_client_by_id(ev.data.client_id)
     if client and client:supports_method('textDocument/inlayHint') then
-      -- Enable inline hint
       vim.lsp.inlay_hint.enable(true, { bufnr = ev.buf })
     end
+    -- Enable fold tag
+    -- Prefer LSP folding if client supports it
+    if client and client:supports_method('textDocument/foldingRange') then
+      local win = vim.api.nvim_get_current_win()
+      vim.wo[win][0].foldexpr = 'v:lua.vim.lsp.foldexpr()'
+    else
+      vim.o.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+    end
+
     -- LSP keymaps
     vim.keymap.set('n', 'K', vim.lsp.buf.hover, { buffer = ev.buf, desc = 'LSP hover' })
     vim.keymap.set('n', '<leader>ch', vim.lsp.buf.hover, { buffer = ev.buf, desc = 'LSP hover' })
