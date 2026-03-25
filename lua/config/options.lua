@@ -1,4 +1,8 @@
 local utils = require('libs.utils')
+
+-- Custom
+vim.o.shell = 'fish'
+
 -- [Appearance]
 if utils.is_compatible_version('0.10') then
   vim.opt.termguicolors = true -- enable 24-bit RGB colors
@@ -19,14 +23,14 @@ vim.opt.tabstop = 2 -- tab character width
 vim.opt.shiftround = true -- round indent to nearest multiple of shiftwidth
 vim.opt.smartindent = true -- auto-indent new lines intelligently
 -- Wrap
+-- This will be opened by `config/autocommands` for certain filetypes
 vim.opt.wrap = false -- default not line wrap
-vim.opt.linebreak = true -- wrap at word boundary if wrap
+-- vim.opt.linebreak = true -- wrap at word boundary if wrap
 vim.opt.breakindent = true -- maintain indent on wrap
 -- Others
 vim.opt.winminwidth = 5 -- prevent tiny splits
 
 -- [Editor]
--- vim.opt.cmdheight = 0 -- auto hide status line when cmd
 vim.opt.fileformat = 'unix'
 vim.opt.mouse = 'a' -- enable mouse in all modes
 vim.opt.laststatus = 3 -- global satusline (once you add one)
@@ -44,13 +48,13 @@ vim.opt.splitright = true -- vertical splits to the right
 vim.opt.splitkeep = 'screen' -- preserve layout when splitting
 -- Format
 vim.opt.formatoptions =
-'jcroqlnt' -- keep comments, wrap text, autoformat when possible
+'tcqjrlmnt' -- not keep comments, wrap text, autoformat when possible
 -- Command
 vim.opt.inccommand = 'nosplit' -- live preview for :substitute
 vim.opt.wildmode = 'longest:full,full' -- enhanced command completion
 -- Fold https://www.jackfranklin.co.uk/blog/code-folding-in-vim-neovim/
 vim.opt.foldmethod = 'expr'
--- Fold expr are on `config/autocommands`
+-- Fold expr are on `plugins/lsp`
 -- vim.opt.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
 vim.opt.foldcolumn = '0'
 vim.opt.foldlevel = 99
@@ -61,7 +65,6 @@ vim.opt.foldnestmax = 6 -- levels that won't be broken down into more granular f
 -- Others
 vim.opt.jumpoptions = 'view' -- restore view after jump
 vim.opt.virtualedit = 'block' -- allow cursor past EOL in block mode
-vim.opt.formatoptions = vim.o.formatoptions:gsub('[ro]', '') -- break comment new line
 
 -- [Functions]
 -- Clipboard
@@ -69,11 +72,23 @@ vim.opt.clipboard = vim.env.SSH_CONNECTION and '' or 'unnamedplus'
 -- Check spelling
 -- This will be opened by `config/autocommands` for certain filetypes
 vim.opt.spell = false
-vim.opt.spelllang = 'en_us'
+vim.opt.spelllang = 'en_us,cjk'
 vim.opt.spellsuggest = 'best,5' -- show only first best 5
 -- vim.opt.spelloptions = 'underscore'
 vim.opt.spelloptions = 'camel' --support CamelCase
 -- UI2
 -- https://neovim.io/doc/user/lua/#_ui2
+vim.opt.cmdheight = 0 -- auto hide status line when cmd
 local ok, ui2 = pcall(require, 'vim._core.ui2')
-if ok then ui2.enable({ enable = true }) end
+if ok then
+  ui2.enable({
+    enable = true,
+    msg = {
+      targets = 'msg',
+      -- cmd = { height = 0.5, },
+      -- msg = { height = 0.5, timeout = 4000, },
+      -- dialog = { height = 0.5, },
+      -- pager = { height = 1, },
+    },
+  })
+end

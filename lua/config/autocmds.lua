@@ -8,7 +8,19 @@ vim.api.nvim_create_autocmd('FileType', {
     'plaintex',
   },
   callback = function()
+    -- vim.opt.spelllang = 'en_us'
+    -- vim.opt_local.spelllang = 'en_us'
     vim.opt_local.spell = true
+    vim.opt_local.wrap = true
+  end,
+})
+
+-- [Autocmd] Disable auto comment
+vim.api.nvim_create_autocmd('BufEnter', {
+  group = vim.api.nvim_create_augroup('DisableAutoComment', { clear = true }),
+  callback = function()
+    ---@diagnostic disable-next-line: undefined-field
+    vim.opt.formatoptions:remove({ 'o' })
   end,
 })
 
