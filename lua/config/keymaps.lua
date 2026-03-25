@@ -85,7 +85,8 @@ end, { desc = 'Increase window width' })
 
 -- [Functions]
 -- Terminal
-vim.keymap.set('n', '<leader>`', '<cmd>vert term fish.exe<cr>', { desc = 'Open term' })
+-- moved to `plugins/snacks`
+-- vim.keymap.set('n', '<leader>`', '<cmd>vert term<cr>', { desc = 'Open term' })
 
 -- Search
 -- Better n/N behavior https://github.com/mhinz/vim-galore#saner-behavior-of-n-and-n

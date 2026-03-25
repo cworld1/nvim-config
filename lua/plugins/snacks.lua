@@ -345,7 +345,7 @@ local key = {
   { '<leader>bd', function() Snacks.bufdelete() end, desc = 'Delete buffer' },
   { '<leader>bo', function() Snacks.bufdelete.other() end, desc = 'Delete other buffers' },
   { '<leader>br', function() Snacks.rename.rename_file() end, desc = 'Rename file' },
-  { '<c-/>', function() Snacks.terminal() end, desc = 'Toggle terminal' },
+  { '<leader>pt', function() Snacks.terminal() end, desc = 'Toggle terminal' },
   { ']]', function() Snacks.words.jump(vim.v.count1) end, desc = 'Next reference', mode = { 'n', 't' } },
   { '[[', function() Snacks.words.jump(-vim.v.count1) end, desc = 'Prev reference', mode = { 'n', 't' } },
   {
