@@ -226,7 +226,9 @@ Snacks.setup({
           -- Improve performance using debounce
           local orig_show_preview = picker.show_preview
           picker._preview_timer = vim.uv.new_timer()
+
           picker.show_preview = function(self)
+            if not self._preview_timer then return end
             -- Stop rendering if new key is pressed
             self._preview_timer:stop()
             -- Wait 200ms to load
@@ -319,13 +321,14 @@ local key = {
   { '<leader>su', function() Snacks.picker.undo() end, desc = 'Undo history' },
   -- { '<leader>uC', function() Snacks.picker.colorschemes() end, desc = 'Colorschemes' },
   -- Git
-  { '<leader>gB', function() Snacks.gitbrowse() end, desc = 'Git browse', mode = { 'n', 'v' } },
-  { '<leader>gg', function() Snacks.lazygit() end, desc = 'Lazygit' },
-  { '<leader>gb', function() Snacks.picker.git_branches() end, desc = 'Git branches' },
   { '<leader>gl', function() Snacks.picker.git_log() end, desc = 'Git log' },
+  { '<leader>gL', function() Snacks.gitbrowse() end, desc = 'Git browse link', mode = { 'n', 'v' } },
+  { '<leader>gb', function() Snacks.git.blame_line() end, desc = 'Git blame line' },
+  { '<leader>gB', function() Snacks.picker.git_branches() end, desc = 'Git branches' },
+  { '<leader>gg', function() Snacks.lazygit() end, desc = 'Lazygit' },
   { '<leader>gs', function() Snacks.picker.git_status() end, desc = 'Git status' },
   { '<leader>gS', function() Snacks.picker.git_stash() end, desc = 'Git stash' },
-  { '<leader>gd', function() Snacks.picker.git_diff() end, desc = 'Git diff (hunks)' },
+  { '<leader>gD', function() Snacks.picker.git_diff() end, desc = 'Git diff (hunks)' },
   -- LSP
   { '<leader>cD', function() Snacks.picker.diagnostics() end, desc = 'Diagnostics' },
   { '<leader>cd', function() Snacks.picker.diagnostics_buffer() end, desc = 'Buffer diagnostics' },
@@ -410,7 +413,7 @@ lazy.load({
     -- Create some toggle mappings
     Snacks.toggle.option('spell', { name = 'Spelling' }):map('<leader>us')
     Snacks.toggle.option('wrap', { name = 'Wrap' }):map('<leader>uw')
-    Snacks.toggle.option('relativenumber', { name = 'Relative Number' }):map('<leader>uL')
+    Snacks.toggle.option('relativenumber', { name = 'Relative number' }):map('<leader>uL')
     Snacks.toggle.diagnostics():map('<leader>ud')
     Snacks.toggle.line_number():map('<leader>ul')
     Snacks.toggle.option('conceallevel',
