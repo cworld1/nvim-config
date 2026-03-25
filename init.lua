@@ -39,3 +39,7 @@ require('custom.statusline').setup({
 require('custom.pairs').setup()
 require('custom.surround').setup()
 require('custom.sudo').setup()
+require('custom.git').setup({
+  stage_action = Snacks.picker.actions.git_stage,
+  get_git_root = Snacks.git.get_root
+})
