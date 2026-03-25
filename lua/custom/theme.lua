@@ -87,13 +87,13 @@ function M.setup()
   -- Syntax highlighting
   hi('Comment', { fg = colors.comment })
   hi('Constant', { fg = colors.blue })
-  hi('String', { fg = colors.cyan })
+  -- hi('String', { fg = colors.cyan })
   hi('Character', { fg = colors.cyan })
   hi('Number', { fg = colors.cyan })
   hi('Boolean', { fg = colors.blue })
   hi('Float', { fg = colors.cyan })
 
-  hi('Identifier', { fg = colors.fg })
+  -- hi('Identifier', { fg = colors.fg })
   hi('Function', { fg = colors.purple })
 
   hi('Statement', { fg = colors.red })
@@ -115,8 +115,8 @@ function M.setup()
   hi('Structure', { fg = colors.red })
   hi('Typedef', { fg = colors.red })
 
-  hi('Special', { fg = colors.orange })
-  hi('SpecialChar', { fg = colors.cyan })
+  hi('Special', { fg = colors.cyan })
+  hi('SpecialChar', { fg = colors.orange })
   hi('Tag', { fg = colors.green })
   hi('Delimiter', { fg = colors.fg })
   hi('SpecialComment', { fg = colors.comment })
@@ -195,7 +195,7 @@ function M.setup()
   hi('DiffText', { fg = colors.yellow, bg = '#3d3014' })
 
   -- Builtin other highlight groups
-  hi('SpecialKey', { fg = colors.comment }) -- welcome info key text
+  -- hi('SpecialKey', { fg = colors.comment }) -- welcome info key text
   hi('ModeMsg', { fg = colors.green }) -- mode note
   hi('Directory', { fg = colors.fg }) -- netrw dict
 
