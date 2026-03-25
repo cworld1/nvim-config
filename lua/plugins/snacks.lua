@@ -256,31 +256,32 @@ Snacks.setup({
           -- Override
           toggle_preview = function(picker) picker.preview.win:toggle() end,
         },
-        -- win = {
-        --   list = {
-        --     keys = {
-        --       ['<BS>'] = 'explorer_up',
-        --       ['o'] = 'explorer_open', -- open with system application
-        --       ['P'] = 'toggle_preview',
-        --       ['u'] = 'explorer_update',
-        --       ['<c-c>'] = 'tcd',
-        --       ['<leader>fg'] = 'picker_grep',
-        --       ['<c-t>'] = 'terminal',
-        --       ['.'] = 'explorer_focus',
-        --       ['I'] = 'toggle_ignored',
-        --       ['H'] = 'toggle_hidden',
-        --       ['Z'] = 'explorer_close_all',
-        --       [']g'] = 'explorer_git_next',
-        --       ['[g'] = 'explorer_git_prev',
-        --       [']d'] = 'explorer_diagnostic_next',
-        --       ['[d'] = 'explorer_diagnostic_prev',
-        --       [']w'] = 'explorer_warn_next',
-        --       ['[w'] = 'explorer_warn_prev',
-        --       [']e'] = 'explorer_error_next',
-        --       ['[e'] = 'explorer_error_prev',
-        --     },
-        --   },
-        -- },
+        win = {
+          list = {
+            keys = {
+              -- ['<BS>'] = 'explorer_up',
+              -- ['o'] = 'explorer_open', -- open with system application
+              -- ['P'] = 'toggle_preview',
+              -- ['u'] = 'explorer_update',
+              -- ['<c-c>'] = 'tcd',
+              -- ['<leader>fg'] = 'picker_grep',
+              -- ['<c-t>'] = 'terminal',
+              -- ['.'] = 'explorer_focus',
+              -- ['I'] = 'toggle_ignored',
+              -- ['H'] = 'toggle_hidden',
+              -- ['Z'] = 'explorer_close_all',
+              -- [']g'] = 'explorer_git_next',
+              -- ['[g'] = 'explorer_git_prev',
+              -- [']d'] = 'explorer_diagnostic_next',
+              -- ['[d'] = 'explorer_diagnostic_prev',
+              -- [']w'] = 'explorer_warn_next',
+              -- ['[w'] = 'explorer_warn_prev',
+              -- [']e'] = 'explorer_error_next',
+              -- ['[e'] = 'explorer_error_prev',
+              ['s'] = 'git_stage'
+            },
+          },
+        },
       }
     }
   },
@@ -337,6 +338,8 @@ local key = {
   { 'gr', function() Snacks.picker.lsp_references() end, nowait = true, desc = 'References' },
   { 'gI', function() Snacks.picker.lsp_implementations() end, desc = 'Goto implementation' },
   { 'gy', function() Snacks.picker.lsp_type_definitions() end, desc = 'Goto t[y]pe definition' },
+  { ']]', function() Snacks.words.jump(vim.v.count1) end, desc = 'Next reference', mode = { 'n', 't' } },
+  { '[[', function() Snacks.words.jump(-vim.v.count1) end, desc = 'Prev reference', mode = { 'n', 't' } },
   -- { 'gai', function() Snacks.picker.lsp_incoming_calls() end, desc = 'C[a]lls incoming' },
   -- { 'gao', function() Snacks.picker.lsp_outgoing_calls() end, desc = 'C[a]lls outgoing' },
   -- { '<leader>sS', function() Snacks.picker.lsp_workspace_symbols() end, desc = 'LSP workspace symbols' },
@@ -349,8 +352,6 @@ local key = {
   { '<leader>bo', function() Snacks.bufdelete.other() end, desc = 'Delete other buffers' },
   { '<leader>br', function() Snacks.rename.rename_file() end, desc = 'Rename file' },
   { '<leader>pt', function() Snacks.terminal() end, desc = 'Toggle terminal' },
-  { ']]', function() Snacks.words.jump(vim.v.count1) end, desc = 'Next reference', mode = { 'n', 't' } },
-  { '[[', function() Snacks.words.jump(-vim.v.count1) end, desc = 'Prev reference', mode = { 'n', 't' } },
   {
     '<leader>pN',
     function()
@@ -420,7 +421,7 @@ lazy.load({
       { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2 }):map('<leader>uc')
     Snacks.toggle.treesitter():map('<leader>uT')
     Snacks.toggle.option('background', { off = 'light', on = 'dark', name = 'Dark Background' }):map(
-      '<leader>ub')
+      '<leader>uB')
     Snacks.toggle.inlay_hints():map('<leader>uh')
     Snacks.toggle.indent():map('<leader>ug')
     Snacks.toggle.dim():map('<leader>uD')
