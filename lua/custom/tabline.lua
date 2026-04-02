@@ -73,11 +73,11 @@ M.setup = function(opts)
   -- Scroll callback of mouse click on the left and right arrow
   _G.TablineScrollLeft = function()
     M.viewport_start = math.max(1, M.viewport_start - 1)
-    vim.cmd('redrawtabline')
+    vim.cmd.redrawtabline()
   end
   _G.TablineScrollRight = function()
     M.viewport_start = M.viewport_start + 1
-    vim.cmd('redrawtabline')
+    vim.cmd.redrawtabline()
   end
 
   if M.config.hide_single_tab then M.update_showtabline() else vim.o.showtabline = 2 end
