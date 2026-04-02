@@ -23,17 +23,12 @@ M.config = {
 -- [Stage] current file
 -- Returns a two‑character string such as " M", "M ", "??", etc.
 local function get_file_status(git_root, rel_path)
-  local out = vim.fn.systemlist({
-    'git',
-    '-C',
-    git_root,
-    'status',
-    '--porcelain=v1',
-    '--',
-    rel_path,
-  })
-  if #out == 0 then return nil end
-  return out[1]:sub(1, 2)
+  local obj = vim.system({
+    'git', '-C', git_root, 'status', '--porcelain=v1', '--', rel_path
+  }, { text = true }):wait()
+
+  if obj.code ~= 0 or not obj.stdout or obj.stdout == '' then return nil end
+  return obj.stdout:sub(1, 2)
 end
 
 --- Toggle the stage/unstage state of the file in the current buffer.
@@ -48,7 +43,7 @@ function M.toggle_stage()
     vim.notify('Git repo not found', vim.log.levels.ERROR)
     return
   end
-  local rel_path = vim.fn.fnamemodify(bufname, ':.') -- path relative to repo root
+  local rel_path = vim.fs.relpath(git_root, bufname) or bufname -- path relative to repo root
   local status = get_file_status(git_root, rel_path)
   if not status then
     vim.notify('File is not tracked by Git', vim.log.levels.ERROR)
@@ -134,14 +129,18 @@ local function format_blame(commit)
   return text
 end
 
-local function clear_blame(buf)
-  if vim.api.nvim_buf_is_valid(buf) then
-    pcall(vim.api.nvim_buf_del_extmark, buf, NS, 1)
+local function clear_blame(bufnr)
+  if vim.api.nvim_buf_is_valid(bufnr) then
+    vim.api.nvim_buf_del_extmark(bufnr, NS, 1)
   end
 end
 
+local function is_insert_mode()
+  return vim.api.nvim_get_mode().mode:sub(1, 1) == 'i'
+end
+
 local function show_blame(buf)
-  if not M.config.blame.enabled or vim.api.nvim_get_current_buf() ~= buf or vim.fn.mode() == 'i' then return end
+  if not M.config.blame.enabled or vim.api.nvim_get_current_buf() ~= buf or is_insert_mode() then return end
   local st = b_state[buf]
   if not st or not st.blames or st.tick ~= vim.api.nvim_buf_get_changedtick(buf) then
     clear_blame(buf)
@@ -152,11 +151,12 @@ local function show_blame(buf)
   local text = format_blame(st.blames[line])
   if not text then return clear_blame(buf) end
 
-  pcall(vim.api.nvim_buf_set_extmark, buf, NS, line - 1, 0, {
+  vim.api.nvim_buf_set_extmark(buf, NS, line - 1, 0, {
     id = 10,
     virt_text = { { text, M.config.blame.highlight_group } },
     virt_text_pos = 'eol',
     hl_mode = 'combine',
+    priority = 1000,
   })
 end
 
@@ -191,7 +191,7 @@ local function fetch_blame(buf)
       if obj.code == 0 and obj.stdout then
         st.blames = parse_porcelain(obj.stdout)
         st.tick = tick
-        if vim.api.nvim_get_current_buf() == buf and vim.fn.mode() ~= 'i' then show_blame(buf) end
+        if vim.api.nvim_get_current_buf() == buf and not is_insert_mode() then show_blame(buf) end
       end
     end)
   end)
@@ -224,7 +224,8 @@ function M.setup(opts)
   if M.config.blame.enabled then
     local aug = vim.api.nvim_create_augroup('MyGit', { clear = true })
     vim.api.nvim_create_autocmd({ 'BufEnter', 'FocusGained', 'BufWritePost', 'InsertLeave' }, {
-      group = aug, callback = function(args) if vim.fn.mode() ~= 'i' then queue_fetch(args.buf) end end
+      group = aug,
+      callback = function(args) if not is_insert_mode() then queue_fetch(args.buf) end end
     })
     vim.api.nvim_create_autocmd({ 'TextChanged', 'TextChangedI' }, {
       group = aug,
@@ -253,9 +254,11 @@ function M.setup(opts)
         end
       end
     })
-    vim.system({ 'git', 'config', 'user.name' }, { text = true }, function(obj)
-      if obj.code == 0 and obj.stdout then current_author = vim.trim(obj.stdout) end
-    end)
+    if not current_author then
+      vim.system({ 'git', 'config', 'user.name' }, { text = true }, function(obj)
+        if obj.code == 0 and obj.stdout then current_author = vim.trim(obj.stdout) end
+      end)
+    end
     for _, win in ipairs(vim.api.nvim_list_wins()) do queue_fetch(vim.api.nvim_win_get_buf(win)) end
   end
   vim.keymap.set('n', '<leader>ub', function() M.toggle_blame() end, { desc = 'Toggle Git Blame' })
