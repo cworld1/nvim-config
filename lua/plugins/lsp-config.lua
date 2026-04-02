@@ -2,6 +2,7 @@ local M = {}
 
 -- [Env] mason
 -- `:Mason` to see the list
+-- https://mason-registry.dev/registry/list
 M.mason = {
   -- LSP
   'lua-language-server', -- lua

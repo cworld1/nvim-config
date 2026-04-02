@@ -120,8 +120,13 @@ lazy.load({
   event = { 'User', pattern = 'VeryLazy' },
   setup = function()
     require('tiny-inline-diagnostic').setup({
-      preset = 'powerline',
+      preset = 'modern',
       signs = { diag = '-' },
+      transparent_cursorline = true,
+      options = {
+        virt_texts = { priority = 2048 },
+        show_source = { enabled = true },
+      },
     })
     vim.diagnostic.config({ virtual_text = false })
 
