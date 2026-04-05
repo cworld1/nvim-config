@@ -1,0 +1,127 @@
+{
+  "name": "snippets",
+  "engines": {
+    "vscode": "^1.11.0"
+  },
+  "contributes": {
+    "snippets": [
+      {
+        "language": ["license"],
+        "path": "./friendly-snippets/tool/license.json"
+      },
+      {
+        "language": "c",
+        "path": "./friendly-snippets/c.json"
+      },
+      {
+        "language": "cpp",
+        "path": "./friendly-snippets/cpp.json"
+      },
+      {
+        "language": ["csharp", "cs"],
+        "path": "./friendly-snippets/csharp.json"
+      },
+      {
+        "language": ["gitcommit", "NeogitCommitMessage"],
+        "path": "./friendly-snippets/tool/gitcommit.json"
+      },
+      {
+        "language": "lua",
+        "path": "./friendly-snippets/lua.json"
+      },
+      {
+        "language": "go",
+        "path": "./friendly-snippets/go.json"
+      },
+      {
+        "language": "php",
+        "path": "./friendly-snippets/php.json"
+      },
+      {
+        "language": "rust",
+        "path": "./friendly-snippets/rust.json"
+      },
+      {
+        "language": "sql",
+        "path": "./friendly-snippets/sql.json"
+      },
+      {
+        "language": ["shellscript", "shell", "sh", "zsh"],
+        "path": "./friendly-snippets/shell.json"
+      },
+      {
+        "language": ["markdown", "rmd"],
+        "path": "./friendly-snippets/markdown.json"
+      },
+      {
+        "language": ["plaintex", "tex"],
+        "path": "./friendly-snippets/latex.json"
+      },
+      {
+        "language": "java",
+        "path": "./friendly-snippets/java.json"
+      },
+      {
+        "language": [
+          "html",
+          "jade",
+          "pug",
+          "eruby",
+          "javascriptreact",
+          "htmldjango",
+          "astro",
+          "blade"
+        ],
+        "path": "./friendly-snippets/frontend/html.json"
+      },
+      {
+        "language": ["css", "scss", "sass", "less", "stylus"],
+        "path": "./friendly-snippets/frontend/css.json"
+      },
+      {
+        "language": ["javascript", "javascriptreact", "vue", "svelte"],
+        "path": "./friendly-snippets/frontend/javascript.json"
+      },
+      {
+        "language": "typescriptreact",
+        "path": "./friendly-snippets/frontend/react-ts.json"
+      },
+      {
+        "language": "typescriptreact",
+        "path": "./friendly-snippets/frontend/next-ts.json"
+      },
+      {
+        "language": "vue",
+        "path": "./friendly-snippets/frontend/vue.json"
+      },
+      {
+        "language": "python",
+        "path": "./friendly-snippets/python.json"
+      },
+      {
+        "language": ["r", "rmd"],
+        "path": "./friendly-snippets/r.json"
+      },
+      {
+        "language": "rmd",
+        "path": "./friendly-snippets/tool/rmarkdown.json"
+      },
+      {
+        "language": "yaml",
+        "path": "./friendly-snippets/tool/docker-compose.json"
+      },
+      {
+        "language": "unity",
+        "path": "./friendly-snippets/tool/unity.json"
+      },
+      {
+        "language": ["powershell", "ps1"],
+        "path": "./friendly-snippets/PowerShell.json"
+      },
+      {
+      "language": "cmake",
+      "path": "./friendly-snippets/tool/cmake.json"
+      }
+    ]
+  }
+}
