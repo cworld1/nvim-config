@@ -1,8 +1,5 @@
 # CWorld NeoVim Config
 
-> [!NOTE]
-> Only support nvim 0.12 for this branch.
-
 ## About
 
 This repo hosts my [NeoVim](https://neovim.io/) configuration for Desktop environment.
@@ -29,7 +26,7 @@ This repo hosts my [NeoVim](https://neovim.io/) configuration for Desktop enviro
 
 ## Installation
 
-Making sure you've installed [NeoVim 0.12](https://github.com/neovim/neovim/releases/nightly).
+Making sure you've installed [NeoVim 0.12](https://github.com/neovim/neovim/releases).
 
 _For Windows:_
 
