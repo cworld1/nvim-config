@@ -1,7 +1,7 @@
 local utils = require('libs.utils')
 
 -- Custom
-vim.o.shell = 'fish'
+vim.opt.shell = 'fish'
 
 -- [Appearance]
 if utils.is_compatible_version('0.10') then

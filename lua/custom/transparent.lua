@@ -32,7 +32,7 @@ M.config = {
   on_clear = function() end,
 }
 
-M.setup = function(opts)
+function M.setup(opts)
   M.config = vim.tbl_extend('force', M.config, opts)
 
   M.cache_path = vim.fn.stdpath('data') .. package.config:sub(1, 1) .. 'transparent_state'
@@ -72,16 +72,17 @@ M.setup = function(opts)
 end
 
 -- [Cache Module] persist state
-M.cache_read = function()
+function M.cache_read()
   local ok, data = pcall(vim.fn.readfile, M.cache_path)
   vim.g.bg_transparent = ok and #data > 0 and vim.trim(data[1]) == 'true'
 end
-M.cache_write = function()
+
+function M.cache_write()
   vim.fn.writefile({ tostring(vim.g.bg_transparent) }, M.cache_path)
 end
 
 -- [Core] Clear highlight groups
-M.clear_group = function(group)
+function M.clear_group(group)
   local list = type(group) == 'string' and { group } or group
 
   for _, g in ipairs(list) do
@@ -102,7 +103,7 @@ M.clear_group = function(group)
   end
 end
 
-M.do_clear = function()
+function M.do_clear()
   if not vim.g.bg_transparent then return end
 
   M.clear_group(M.config.groups)

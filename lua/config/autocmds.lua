@@ -1,4 +1,4 @@
--- [Autocmd] Spelling check for docs
+-- Spelling check for docs
 vim.api.nvim_create_autocmd('FileType', {
   group = vim.api.nvim_create_augroup('TextSpellCheck', { clear = true }),
   pattern = {
@@ -15,23 +15,23 @@ vim.api.nvim_create_autocmd('FileType', {
   end,
 })
 
--- [Autocmd] Disable auto comment
-vim.api.nvim_create_autocmd('BufEnter', {
+-- No commenting on next line when o or O in normal mode
+vim.api.nvim_create_autocmd('FileType', {
   group = vim.api.nvim_create_augroup('DisableAutoComment', { clear = true }),
+  pattern = '*',
   callback = function()
-    ---@diagnostic disable-next-line: undefined-field
-    vim.opt.formatoptions:remove({ 'o' })
+    vim.opt_local.formatoptions:remove({ 'c', 'r', 'o' })
   end,
 })
 
--- [Autocmd] Highlight on yank
+-- Highlight on yank
 vim.api.nvim_create_autocmd('TextYankPost', {
   group = vim.api.nvim_create_augroup('HighlightOnYank', { clear = true }),
-  callback = function() (vim.hl or vim.highlight).on_yank() end,
+  callback = function() vim.hl.on_yank() end,
   desc = 'Highlight yanked text',
 })
 
--- [Autocmd] Change EOL format to unix on save
+-- Change EOL format to unix on save
 vim.api.nvim_create_autocmd('BufWritePre', {
   group = vim.api.nvim_create_augroup('WriteWithLF', { clear = true }),
   pattern = '*',
@@ -41,7 +41,7 @@ vim.api.nvim_create_autocmd('BufWritePre', {
   end
 })
 
--- [Autocmd] Auto set root
+-- Auto set root
 vim.api.nvim_create_autocmd('BufEnter', {
   group = vim.api.nvim_create_augroup('AutoSetRoot', { clear = true }),
   callback = function(args)
