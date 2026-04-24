@@ -42,15 +42,15 @@ local function add_cmd_triggers(cmds, fn)
         vim.api.nvim_del_user_command(cmd)
         fn()
         -- Re-execute the original command with its arguments
-        local cmd_string = cmd
-        if args.range > 0 then
-          cmd_string = args.line1 .. ',' .. args.line2 .. cmd_string
+        local cmd_opts = { cmd = cmd, args = args.fargs, bang = args.bang }
+        if args.range == 1 then
+          cmd_opts.range = { args.line1 }
+        elseif args.range == 2 then
+          cmd_opts.range = { args.line1, args.line2 }
+        elseif args.count and args.count >= 0 then
+          cmd_opts.count = args.count
         end
-        if args.args and args.args ~= '' then
-          cmd_string = cmd_string .. ' ' .. args.args
-        end
-        if args.bang then cmd_string = cmd_string .. '!' end
-        vim.cmd(cmd_string)
+        vim.cmd(cmd_opts)
       end,
       { nargs = '*', bang = true, range = true, complete = 'file' }
     )
