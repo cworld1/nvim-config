@@ -1,4 +1,14 @@
-local M = {}
+local M = {
+  mason = {},
+  lsp = {},
+  conform = {},
+}
+
+local function extend(opts)
+  if opts.mason then vim.list_extend(M.mason, opts.mason) end
+  if opts.lsp then vim.list_extend(M.lsp, opts.lsp) end
+  if opts.conform then M.conform = vim.tbl_deep_extend('force', M.conform, opts.conform) end
+end
 
 -- [Dependency] mason
 -- - `:Mason`
@@ -10,21 +20,21 @@ local M = {}
 -- - `:help conform-formatters`
 
 -- Lua
-M = vim.tbl_deep_extend('force', M, {
+extend({
   mason = { 'lua-language-server' },
   lsp = { 'lua_ls' },
 })
 
 -- Markdown
-M = vim.tbl_deep_extend('force', M, {
+extend({
   mason = { 'marksman' },
   lsp = { 'marksman' },
 })
 vim.filetype.add({ extension = { mdx = 'markdown.mdx', } })
 
 -- Python
-M = vim.tbl_deep_extend('force', M, {
-  mason = { 'ty', 'ruff' }, -- `ty` for lsp, `ruff` for formatter
+extend({
+  mason = { 'ty', 'ruff' },
   lsp = { 'ty', 'ruff' },
   conform = {
     python = function(bufnr)
@@ -38,7 +48,7 @@ M = vim.tbl_deep_extend('force', M, {
 })
 
 -- Front-end
-M = vim.tbl_deep_extend('force', M, {
+extend({
   mason = { 'vtsls', 'css-lsp', 'prettier' },
   lsp = { 'vtsls', 'cssls' },
   conform = {
@@ -50,7 +60,7 @@ M = vim.tbl_deep_extend('force', M, {
 })
 
 -- Vue
-M = vim.tbl_deep_extend('force', M, {
+extend({
   mason = { 'vue-language-server' },
   lsp = { 'vue_ls' },
 })
@@ -74,7 +84,7 @@ vim.lsp.config('vtsls', {
 })
 
 -- Shell
-M = vim.tbl_deep_extend('force', M, {
+extend({
   mason = { 'shfmt' },
   lsp = { 'bashls' },
 })
