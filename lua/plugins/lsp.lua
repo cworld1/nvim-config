@@ -1,4 +1,5 @@
 local lazy = require('libs.lazy')
+local utils = require('libs.utils')
 local config = require('plugins.lsp-config')
 
 -- [Dependencies] Load on run `Mason` command, key, and event
@@ -37,6 +38,14 @@ lazy.load({
     })
   end
 })
+-- Path injection
+-- lspconfig can activate lsp without mason loaded
+-- can save up ~200 ms when open a file via nvim directly from terminal prompt
+local mason_bin = vim.fs.joinpath(vim.fn.stdpath('data'), 'mason', 'bin')
+if not vim.env.PATH:find(mason_bin, 1, true) then
+  local sep = utils.is_windows() and ';' or ':'
+  vim.env.PATH = mason_bin .. sep .. vim.env.PATH
+end
 
 -- [LSP] Load when opening files or delay
 lazy.load({
@@ -52,7 +61,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
     -- Enable inline hint
     local client = vim.lsp.get_client_by_id(ev.data.client_id)
     if client and client:supports_method('textDocument/inlayHint') then
-      vim.lsp.inlay_hint.enable(true, { bufnr = ev.buf })
+      vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = ev.buf }))
     end
     -- Enable fold tag
     -- Prefer LSP folding if client supports it
