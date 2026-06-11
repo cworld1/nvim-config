@@ -2,9 +2,13 @@
 -- https://github.com/akinsho/bufferline.nvim/blob/main/doc/bufferline.txt
 local icons = require('libs.icons')
 local M = {}
+local mini_icons_cache = nil
+
+M._name_cache = {}
 
 -- Default config
 M.config = {
+  max_name_length = 20,
   -- Hide tabline when only one buffer is open
   hide_single_tab = false,
   -- on_close: optional function(buf_id) -> boolean
@@ -14,9 +18,12 @@ M.config = {
   on_close = nil,
   -- file_icons: function(filename) -> string, string
   file_icons = function(filename)
-    local ok, mini_icons = pcall(require, 'mini.icons')
-    if ok then
-      local icon, hl, _ = mini_icons.get('file', filename)
+    if mini_icons_cache == nil then
+      local ok, mini_icons = pcall(require, 'mini.icons')
+      mini_icons_cache = ok and mini_icons or false
+    end
+    if mini_icons_cache then
+      local icon, hl, _ = mini_icons_cache.get('file', filename)
       return icon or '', hl or 'Normal'
     end
     return '', 'Normal'
@@ -92,6 +99,13 @@ M.setup = function(opts)
       group = group, callback = function() M.update_showtabline() end,
     })
   end
+
+  vim.api.nvim_create_autocmd('BufWipeout', {
+    group = group,
+    callback = function(args)
+      M._name_cache[args.buf] = nil
+    end,
+  })
 end
 
 -- Update showtabline option based on buffer count
@@ -143,12 +157,40 @@ end
 M.format_tab = function(buf_id, is_current)
   -- Get buffer name
   local bufname = vim.api.nvim_buf_get_name(buf_id)
-  local filename = bufname ~= '' and vim.fn.fnamemodify(bufname, ':t') or '[No Name]'
+  local cached = M._name_cache[buf_id]
+  local filename
+  local icon_filename
+
+  if cached and cached.raw_path == bufname then
+    filename = cached.display_name
+    icon_filename = cached.icon_filename
+  else
+    icon_filename = bufname ~= '' and vim.fn.fnamemodify(bufname, ':t') or '[No Name]'
+    local bpm_ok, bpm = pcall(require, 'bpm')
+    if bpm_ok then
+      filename = bpm.resolve_bufname(buf_id)
+    else
+      filename = icon_filename
+      local max_len = M.config.max_name_length
+      if max_len and max_len > 0 and #filename > max_len then
+        if vim.fn.strchars(filename) > max_len then
+          filename = vim.fn.strcharpart(filename, 0, max_len - 1) .. '…'
+        end
+      end
+    end
+
+    M._name_cache[buf_id] = {
+      raw_path = bufname,
+      display_name = filename,
+      icon_filename =
+        icon_filename
+    }
+  end
 
   local bg_hl = is_current and 'TablineCurrent' or 'TablineHidden'
   local tab_hl = '%#' .. bg_hl .. '#'
 
-  local icon, icon_group = M.config.file_icons(filename)
+  local icon, icon_group = M.config.file_icons(icon_filename)
   local icon_hl = get_dynamic_hl(icon_group or 'Normal', bg_hl, false)
   local icon_str = '%#' .. icon_hl .. '# ' .. icon .. ' '
 
