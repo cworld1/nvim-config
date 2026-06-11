@@ -60,34 +60,46 @@ extend({
 })
 
 -- Vue
+-- extend({
+--   mason = { 'vue-language-server' },
+--   lsp = { 'vue_ls' },
+-- })
+-- local function get_vue_plugin()
+--   local vue_language_server_path = vim.fn.stdpath('data') ..
+--     '/mason/packages/vue-language-server/node_modules/@vue/language-server'
+--   return {
+--     name = '@vue/typescript-plugin',
+--     location = vue_language_server_path,
+--     languages = { 'vue' },
+--     configNamespace = 'typescript',
+--   }
+-- end
+-- vim.lsp.config('vtsls', {
+--   settings = {
+--     vtsls = {
+--       tsserver = { globalPlugins = { get_vue_plugin() } },
+--     },
+--   },
+--   filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
+-- })
+
+-- C/C++
 extend({
-  mason = { 'vue-language-server' },
-  lsp = { 'vue_ls' },
-})
-local function get_vue_plugin()
-  local vue_language_server_path = vim.fn.stdpath('data') ..
-    '/mason/packages/vue-language-server/node_modules/@vue/language-server'
-  return {
-    name = '@vue/typescript-plugin',
-    location = vue_language_server_path,
-    languages = { 'vue' },
-    configNamespace = 'typescript',
-  }
-end
-vim.lsp.config('vtsls', {
-  settings = {
-    vtsls = {
-      tsserver = { globalPlugins = { get_vue_plugin() } },
-    },
-  },
-  filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
+  -- mason = { 'clangd' },
+  lsp = { 'clangd' }
 })
 
 -- Shell
 extend({
-  mason = { 'shfmt' },
+  mason = { 'shfmt', 'bash-language-server' },
   lsp = { 'bashls' },
 })
+
+-- Copilot
+-- extend({
+--   mason = { 'copilot-language-server' },
+--   lsp = { 'copilot' },
+-- })
 
 -- Others
 vim.g.markdown_fenced_languages = {
