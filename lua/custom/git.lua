@@ -173,8 +173,8 @@ local function fetch_blame(buf)
   if stats and stats.size > 1.5 * 1024 * 1024 then return end
 
   local tick = vim.api.nvim_buf_get_changedtick(buf)
-  local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
-  if #lines == 0 then return end
+  local ok, lines = pcall(vim.api.nvim_buf_get_lines, buf, 0, -1, false)
+  if not ok or type(lines) ~= 'table' or #lines == 0 then return end
 
   local stdin = table.concat(lines, '\n') .. '\n'
   local cmd = { 'git', '--no-pager', '-C', root, 'blame', '-b', '-p', '-w', '--date', 'unix',
@@ -234,8 +234,19 @@ function M.setup(opts)
         if vim.fn.mode() ~= 'i' then queue_fetch(args.buf) end
       end
     })
+    local last_state = { buf = -1, row = -1 }
     vim.api.nvim_create_autocmd('CursorMoved', {
-      group = aug, callback = function(args) show_blame(args.buf) end
+      group = aug,
+      callback = function(args)
+        local cur_row = vim.api.nvim_win_get_cursor(0)[1]
+        local cur_buf = args.buf
+
+        if cur_row == last_state.row and cur_buf == last_state.buf then return end
+
+        last_state.row = cur_row
+        last_state.buf = cur_buf
+        show_blame(args.buf)
+      end
     })
     vim.api.nvim_create_autocmd('InsertEnter', {
       group = aug, callback = function(args) clear_blame(args.buf) end
