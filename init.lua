@@ -7,6 +7,7 @@ require('libs.lazy').setup({
 require('custom.theme').setup() -- theme must be set before plugins
 
 -- [Config]
+require('config.startup')
 require('config.options')
 require('config.keymaps')
 require('config.autocmds')

@@ -76,21 +76,5 @@ o.clipboard = vim.env.SSH_CONNECTION and '' or 'unnamedplus'
 o.spell = true
 o.spelllang = 'en_us,cjk'
 o.spellsuggest = 'best,5' -- show only first best 5
--- o.spelloptions = 'underscore'
-o.spelloptions = 'camel' --support CamelCase
--- UI2
--- https://neovim.io/doc/user/lua/#_ui2
--- vim.opt.cmdheight = 0 -- auto hide status line when cmd
-local ok, ui2 = pcall(require, 'vim._core.ui2')
-if ok then
-  ui2.enable({
-    enable = true,
-    msg = {
-      -- targets = 'msg',
-      -- cmd = { height = 0.5, },
-      -- msg = { height = 0.5, timeout = 4000, },
-      -- dialog = { height = 0.5, },
-      -- pager = { height = 1, },
-    },
-  })
-end
+o.spelloptions = 'underscore'
+-- o.spelloptions = 'camel' --support CamelCase
