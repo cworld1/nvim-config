@@ -8,7 +8,7 @@ local disabled_built_ins = {
   'fzf',
   'gzip',
   'matchit',
-  'netrwPlugin',
+  -- 'netrwPlugin',
   'matchparen',
   'tarPlugin',
   'tutor',
