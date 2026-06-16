@@ -52,6 +52,7 @@ extend({
   mason = { 'vtsls', 'css-lsp', 'prettier' },
   lsp = { 'vtsls', 'cssls' },
   conform = {
+    html = { 'prettier' },
     css = { 'prettier' },
     javascript = { 'prettier' },
     typescript = { 'prettier' },
