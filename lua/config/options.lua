@@ -76,5 +76,5 @@ o.clipboard = vim.env.SSH_CONNECTION and '' or 'unnamedplus'
 o.spell = true
 o.spelllang = 'en_us,cjk'
 o.spellsuggest = 'best,5' -- show only first best 5
-o.spelloptions = 'underscore'
--- o.spelloptions = 'camel' --support CamelCase
+-- o.spelloptions = 'underscore'
+o.spelloptions = 'camel' --support CamelCase
