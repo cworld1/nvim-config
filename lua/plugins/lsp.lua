@@ -5,7 +5,6 @@ local config = require('plugins.lsp-config')
 -- [Dependencies] Load on run `Mason` command, key, and event
 lazy.load({
   plugin = 'https://github.com/mason-org/mason.nvim',
-  event = { 'BufReadPost', 'BufNewFile' },
   cmd = { 'Mason', 'MasonInstall', 'MasonUninstall', 'MasonLog', 'MasonUpdate' },
   keys = {
     { 'n', '<leader>pm', function() vim.cmd('Mason') end, { desc = '[Panel] Mason' } },
