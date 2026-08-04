@@ -57,6 +57,7 @@ extend({
     javascript = { 'prettier' },
     typescript = { 'prettier' },
     vue = { 'prettier' },
+    yaml = { 'prettier' },
   },
 })
 
