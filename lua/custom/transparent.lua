@@ -34,22 +34,27 @@ M.config = {
 
 function M.setup(opts)
   M.config = vim.tbl_extend('force', M.config, opts)
-
   M.cache_path = vim.fn.stdpath('data') .. package.config:sub(1, 1) .. 'transparent_state'
-  -- Ensure that the parent directory of the cache file exist
-  -- to prevent write crashes due to environment differences
-  local dir = vim.fn.fnamemodify(M.cache_path, ':h')
-  if vim.fn.isdirectory(dir) == 0 then vim.fn.mkdir(dir, 'p') end
+
   M.cache_read() -- load state on startup
 
-  if opts.auto_enable then
-    vim.api.nvim_create_autocmd('VimEnter', {
-      once = true,
-      callback = function()
-        vim.schedule(function() M.toggle(true) end)
-      end,
-    })
+  if opts.auto_enable ~= nil then
+    if opts.auto_enable then
+      vim.g.bg_transparent = true
+    else
+      vim.g.bg_transparent = false
+    end
+    M.cache_write()
   end
+
+  vim.schedule(function()
+    if vim.g.bg_transparent then
+      M.clear()
+    else
+      M.disable()
+    end
+  end)
+
   -- Monitor theme change events to prevent cache pollution
   vim.api.nvim_create_autocmd('ColorScheme', {
     group = vim.api.nvim_create_augroup('TransparentThemeSync', { clear = true }),
@@ -57,6 +62,8 @@ function M.setup(opts)
       if vim.g.bg_transparent then
         M.hl_cache = {}
         M.clear()
+      else
+        M.hl_cache = {}
       end
     end,
   })
@@ -73,30 +80,49 @@ end
 
 -- [Cache Module] persist state
 function M.cache_read()
-  local ok, data = pcall(vim.fn.readfile, M.cache_path)
-  vim.g.bg_transparent = ok and #data > 0 and vim.trim(data[1]) == 'true'
+  local stat = vim.uv.fs_stat(M.cache_path)
+  if stat then
+    local fd = vim.uv.fs_open(M.cache_path, 'r', 438)
+    if fd then
+      local data = vim.uv.fs_read(fd, stat.size, 0)
+      vim.uv.fs_close(fd)
+      if data then
+        vim.g.bg_transparent = (data:match('true') ~= nil)
+        return
+      end
+    end
+  end
+  vim.g.bg_transparent = false
 end
 
 function M.cache_write()
-  vim.fn.writefile({ tostring(vim.g.bg_transparent) }, M.cache_path)
+  local dir = vim.fs.dirname(M.cache_path)
+  if not vim.uv.fs_stat(dir) then vim.fs.mkdir(dir, { parents = true }) end
+  local fd = vim.uv.fs_open(M.cache_path, 'w', 438)
+  if fd then
+    vim.uv.fs_write(fd, tostring(vim.g.bg_transparent), -1)
+    vim.uv.fs_close(fd)
+  end
 end
 
 -- [Core] Clear highlight groups
 function M.clear_group(group)
   local list = type(group) == 'string' and { group } or group
 
-  for _, g in ipairs(list) do
-    if not vim.tbl_contains(M.config.exclude_groups, g) then
-      local ok, prev = pcall(vim.api.nvim_get_hl, 0, { name = g, link = false })
-      if ok and prev then
-        -- Preserve original highlight (only save on first transparency)
+  for i = 1, #list do
+    local g = list[i]
+    if not M.config.exclude_groups[g] then
+      local def = vim.api.nvim_get_hl(0, { name = g, link = true })
+
+      if def and not def.link then
         if M.hl_cache[g] == nil then
-          M.hl_cache[g] = vim.deepcopy(prev)
+          M.hl_cache[g] = vim.deepcopy(def)
         end
-        -- Set transparent
-        if prev.bg or prev.ctermbg then
-          prev.bg, prev.ctermbg = 'NONE', 'NONE'
-          vim.api.nvim_set_hl(0, g, prev)
+
+        if def.bg or def.ctermbg then
+          def.bg = nil
+          def.ctermbg = nil
+          vim.api.nvim_set_hl(0, g, def)
         end
       end
     end
@@ -118,10 +144,8 @@ function M.clear()
   if not vim.g.bg_transparent then return end
 
   -- Use pcall to suppress underlying pointer errors
-  for _, t in ipairs(M.timers) do
-    pcall(function()
-      if t and not t:is_closing() then t:close() end
-    end)
+  for i = 1, #M.timers do
+    require('snacks').util.stop(M.timers[i])
   end
   M.timers = {}
 
@@ -130,9 +154,7 @@ function M.clear()
   local timer = vim.uv.new_timer()
   timer:start(800, 0, vim.schedule_wrap(function()
     M.do_clear()
-    pcall(function()
-      if not timer:is_closing() then timer:close() end
-    end)
+    require('snacks').util.stop(timer)
   end))
   table.insert(M.timers, timer)
 
@@ -151,8 +173,8 @@ function M.disable()
   vim.g.bg_transparent = false
   M.cache_write()
 
-  for _, t in ipairs(M.timers) do
-    if t and not t:is_closing() then t:close() end
+  for i = 1, #M.timers do
+    require('snacks').util.stop(M.timers[i])
   end
   M.timers = {}
   -- Restore original highlights
@@ -162,7 +184,7 @@ function M.disable()
   -- Clear cache for next save
   M.hl_cache = {}
   -- If the theme plugin reloads the highlight, reset the theme
-  if vim.g.colors_name then pcall(vim.cmd.colorscheme, vim.g.colors_name) end
+  vim.cmd('redraw!')
 end
 
 function M.toggle(opt)

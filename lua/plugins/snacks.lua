@@ -374,25 +374,27 @@ local key = {
 
 -- Implement key registration
 local set_keys = function(keys)
-  for _, k in ipairs(keys) do
+  for i = 1, #keys do
+    local k = keys[i]
     local lhs, rhs = k[1], k[2]
 
-    if not lhs or not rhs then goto continue end
+    if lhs and rhs then
+      local opts = {}
+      if k.desc then opts.desc = k.desc end
+      if k.nowait ~= nil then opts.nowait = k.nowait end
+      if k.silent ~= nil then opts.silent = k.silent end
+      if k.expr ~= nil then opts.expr = k.expr end
+      if k.buffer ~= nil then opts.buffer = k.buffer end
 
-    local opts = {}
-    if k.desc then opts.desc = k.desc end
-    if k.nowait ~= nil then opts.nowait = k.nowait end
-    if k.silent ~= nil then opts.silent = k.silent end
-    if k.expr ~= nil then opts.expr = k.expr end
-    if k.buffer ~= nil then opts.buffer = k.buffer end
-
-    local mode = k.mode or 'n'
-    if type(mode) == 'table' then
-      for _, m in ipairs(mode) do vim.keymap.set(m, lhs, rhs, opts) end
-    else
-      vim.keymap.set(mode, lhs, rhs, opts)
+      local mode = k.mode or 'n'
+      if type(mode) == 'table' then
+        for j = 1, #mode do
+          vim.keymap.set(mode[j], lhs, rhs, opts)
+        end
+      else
+        vim.keymap.set(mode, lhs, rhs, opts)
+      end
     end
-    ::continue::
   end
 end
 

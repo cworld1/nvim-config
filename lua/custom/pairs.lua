@@ -108,18 +108,13 @@ end
 
 -- Setup
 function M.setup()
-  local opts = { expr = true, replace_keycodes = true }
-
+  local keymap_opts = { expr = true, replace_keycodes = true }
   local function bind(key, factory)
-    vim.keymap.set('i', key, factory(key, 'i'), opts)
-    if key ~= '<CR>' then
-      vim.keymap.set('c', key, factory(key, 'c'), opts)
-    end
+    vim.keymap.set('i', key, factory(key, 'i'), keymap_opts)
   end
 
   bind('<BS>', make_bs_handler)
   bind('<CR>', make_cr_handler)
-
   for key in pairs(open_pairs) do bind(key, make_open_handler) end
   for key in pairs(close_pairs) do bind(key, make_close_handler) end
   for key in pairs(quotes) do bind(key, make_quote_handler) end

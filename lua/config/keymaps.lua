@@ -58,8 +58,22 @@ map('n', '<s-l>', '<cmd>bnext<cr>', { desc = 'Next buffer' })
 --     if vim.api.nvim_buf_is_loaded(buf) and buf ~= current then vim.cmd('bdelete ' .. buf) end
 --   end
 -- end, { desc = 'Delete Other Buffers' })
+map('n', '<leader>bn', function()
+  local buf = vim.api.nvim_create_buf(true, false)
+  vim.api.nvim_set_current_buf(buf)
+end, { desc = 'New file' })
 map('n', '<leader>bn', '<cmd>enew<cr>', { desc = 'New file' }) -- new file
 map('n', '<leader>bt', ':set filetype=', { desc = 'Change filetype' })
+map('n', '<leader>bp', function()
+  local path = vim.fn.expand('%:p:h')
+  if path == '' then
+    vim.notify('Not a file', vim.log.levels.WARN)
+    return
+  end
+  vim.cmd('silent !open ' .. vim.fn.shellescape(path))
+  -- vim.notify(vim.api.nvim_buf_get_name(0), vim.log.levels.INFO)
+end, { desc = 'Path of buffer' })
+
 
 -- [Window]
 map('n', '<leader>pd', '<c-w>c', { desc = 'Delete window', remap = true })

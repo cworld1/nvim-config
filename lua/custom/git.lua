@@ -136,7 +136,7 @@ local function clear_blame(bufnr)
 end
 
 local function is_insert_mode()
-  return vim.api.nvim_get_mode().mode:sub(1, 1) == 'i'
+  return vim.fn.mode():sub(1, 1) == 'i'
 end
 
 local function show_blame(buf)
@@ -207,7 +207,10 @@ end
 function M.toggle_blame()
   M.config.blame.enabled = not M.config.blame.enabled
   if M.config.blame.enabled then
-    for _, win in ipairs(vim.api.nvim_list_wins()) do queue_fetch(vim.api.nvim_win_get_buf(win)) end
+    local wins = vim.api.nvim_list_wins()
+    for i = 1, #wins do
+      queue_fetch(vim.api.nvim_win_get_buf(wins[i]))
+    end
   else
     for buf, _ in pairs(b_state) do clear_blame(buf) end
   end
@@ -255,10 +258,7 @@ function M.setup(opts)
       group = aug,
       callback = function(args)
         local b = args.buf
-        if fetch_timers[b] then
-          if not fetch_timers[b]:is_closing() then fetch_timers[b]:close() end
-          fetch_timers[b] = nil
-        end
+        fetch_timers[b] = require('snacks').util.stop(fetch_timers[b])
         if b_state[b] then
           if b_state[b].job then b_state[b].job:kill('sigterm') end
           b_state[b] = nil
@@ -270,7 +270,10 @@ function M.setup(opts)
         if obj.code == 0 and obj.stdout then current_author = vim.trim(obj.stdout) end
       end)
     end
-    for _, win in ipairs(vim.api.nvim_list_wins()) do queue_fetch(vim.api.nvim_win_get_buf(win)) end
+    local wins = vim.api.nvim_list_wins()
+    for i = 1, #wins do
+      queue_fetch(vim.api.nvim_win_get_buf(wins[i]))
+    end
   end
   vim.keymap.set('n', '<leader>ub', function() M.toggle_blame() end, { desc = 'Toggle Git Blame' })
 end

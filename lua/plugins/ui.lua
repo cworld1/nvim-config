@@ -24,7 +24,7 @@ lazy.load({
   event = { 'BufReadPost', 'BufNewFile' },
   setup = function()
     require('treesitter-context').setup({
-      max_lines = 3, -- How many lines the window should span. Values <= 0 mean no limit.
+      max_lines = 4, -- How many lines the window should span. Values <= 0 mean no limit.
       mode = 'topline', -- Line used to calculate context. Choices: 'cursor', 'topline'
     })
   end

@@ -18,8 +18,12 @@ autocmd('FileType', {
 autocmd('FileType', {
   group = augroup('DisableAutoComment', { clear = true }),
   pattern = '*',
-  callback = function()
-    vim.opt_local.formatoptions:remove({ 'c', 'r', 'o' })
+  callback = function(event)
+    vim.schedule(function()
+      if vim.api.nvim_buf_is_valid(event.buf) then
+        vim.bo[event.buf].formatoptions = vim.bo[event.buf].formatoptions:gsub('[cro]', '')
+      end
+    end)
   end,
 })
 
@@ -32,12 +36,15 @@ autocmd({ 'TextYankPost', 'TextPutPost' }, {
 
 -- Change EOL format to unix on save
 autocmd('BufWritePre', {
-  group = augroup('WriteWithLF', { clear = true }),
-  pattern = '*',
   callback = function(args)
-    local bo = vim.bo[args.buf]
-    if bo.readonly or bo.buftype ~= '' or bo.binary then return end
-    bo.fileformat = 'unix'
+    local buf = args.buf
+    local get_opt = vim.api.nvim_get_option_value
+    if get_opt('readonly', { buf = buf })
+      or get_opt('buftype', { buf = buf }) ~= ''
+      or get_opt('binary', { buf = buf }) then
+      return
+    end
+    vim.api.nvim_set_option_value('fileformat', 'unix', { buf = buf })
   end
 })
 

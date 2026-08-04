@@ -30,9 +30,9 @@ end
 
 --- Ask user safely
 local function get_char(prompt)
-  api.nvim_echo({ { prompt, 'Question' } }, false, {})
+  api.nvim_echo({ { prompt, 'Question' } }, false)
   local ok, char = pcall(fn.getcharstr)
-  api.nvim_echo({ { '', 'Normal' } }, false, {})
+  api.nvim_echo({ { '', 'Normal' } }, false)
   if not ok or char == '\27' or char == '\r' or char == '' then return nil end
   return char
 end
@@ -121,19 +121,14 @@ local function apply_visual_surround(l_char, r_char)
   end)
 end
 
-_G._surround_add_operatorfunc = function()
-  local char = _G._surround_char
-  if not char then return end
-  local pair = surrounds[char] or { char, char }
-  local s_pos, e_pos = api.nvim_buf_get_mark(0, '['), api.nvim_buf_get_mark(0, ']')
-  safe_set_text(s_pos[1] - 1, s_pos[2], e_pos[1] - 1, e_pos[2], pair[1], pair[2])
-end
-
 function M.add_normal()
   local char = get_char('Surround with: ')
   if not char then return '<Esc>' end
-  _G._surround_char = char
-  vim.o.operatorfunc = 'v:lua._surround_add_operatorfunc'
+  vim.o.operatorfunc = function()
+    local pair = surrounds[char] or { char, char }
+    local s_pos, e_pos = api.nvim_buf_get_mark(0, '['), api.nvim_buf_get_mark(0, ']')
+    safe_set_text(s_pos[1] - 1, s_pos[2], e_pos[1] - 1, e_pos[2], pair[1], pair[2])
+  end
   return 'g@'
 end
 
@@ -193,7 +188,8 @@ function M.setup()
   vim.keymap.set('n', 'sr', M.replace, { silent = true, desc = 'Replace surround' })
 
   local visual_auto_pairs = { '(', '[', '{', '"', "'", '`' }
-  for _, char in ipairs(visual_auto_pairs) do
+  for i = 1, #visual_auto_pairs do
+    local char = visual_auto_pairs[i]
     vim.keymap.set('x', char, make_visual_handler(char),
       { silent = true, desc = 'VSCode Wrap ' .. char })
   end

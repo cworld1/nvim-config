@@ -7,12 +7,13 @@ local aug = vim.api.nvim_create_augroup('sudo_save', { clear = true })
 M.is_writable = function(path)
   if path == '' then return true end
   -- Check file permission
-  if vim.fn.filereadable(path) == 1 then
-    return vim.fn.filewritable(path) == 1
+  local stat = vim.uv.fs_stat(path)
+  if stat then
+    return vim.uv.fs_access(path, 'W')
   else
     -- Check path writable
-    local dir = vim.fn.fnamemodify(path, ':h')
-    return vim.fn.filewritable(dir) == 2
+    local dir = vim.fs.dirname(path)
+    return vim.uv.fs_access(dir, 'W')
   end
 end
 
@@ -26,7 +27,7 @@ M.do_sudo_save = function(buf, path)
   local stdin_data = data
 
   if check.code ~= 0 then
-    local pwd = vim.fn.inputsecret('Sudo Password for ' .. vim.fn.fnamemodify(path, ':t') .. ': ')
+    local pwd = vim.fn.inputsecret('Sudo password for ' .. vim.fs.basename(path) .. ': ')
 
     -- Cancel
     if not pwd or pwd == '' then

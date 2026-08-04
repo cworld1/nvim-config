@@ -67,6 +67,7 @@ o.foldnestmax = 6 -- levels that won't be broken down into more granular folds
 -- Others
 o.jumpoptions = 'view' -- restore view after jump
 o.virtualedit = 'block' -- allow cursor past EOL in block mode
+o.updatetime = 250 -- reduce execution time takes from cursorhold
 
 -- [Functions]
 -- Clipboard
