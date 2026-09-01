@@ -19,8 +19,9 @@ M.config = {
   },
 
   extra_groups = {
+    'NormalFloat',
     -- Snacks
-    'SnacksNormalNC', 'SnacksNormal',
+    'SnacksNormal', 'SnacksNormalNC',
     'SnacksPicker', 'SnacksPickerBorder',
     'SnacksPickerBox', 'SnacksPickerBoxBorder',
     'SnacksPickerList', 'SnacksPickerListBorder',
