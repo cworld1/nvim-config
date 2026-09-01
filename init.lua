@@ -52,6 +52,5 @@ require('custom.pairs').setup()
 require('custom.surround').setup()
 require('custom.sudo').setup()
 require('custom.md-paste-image').setup({
-  img_dir = '_res',
-  auto_paste = true,
+  img_dir = '_res/%:t:r',
 })
