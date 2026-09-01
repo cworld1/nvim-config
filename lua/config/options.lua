@@ -40,6 +40,7 @@ o.colorcolumn = '80' -- column ruler
 o.confirm = true -- confirm before quitting unsaved changes
 o.signcolumn = 'yes' -- leave the left lsp or git column
 o.swapfile = false -- disable swapfile function
+o.autoread = true -- auto read new content when file changed
 -- Case
 o.ignorecase = true -- case-insensitive by default
 o.incsearch = true -- show search results while typing
