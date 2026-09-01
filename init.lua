@@ -51,3 +51,8 @@ require('custom.git').setup({
     max_summary_length = 30
   }
 })
+
+require('custom.md-paste-image').setup({
+  img_dir = '_res',
+  auto_paste = true,
+})
