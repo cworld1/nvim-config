@@ -36,10 +36,6 @@ require('custom.statusline').setup({
   hide_filename_by_ft = { snacks_picker_list = true },
   icons = { branch = icons.git.branch }
 })
--- Edit
-require('custom.pairs').setup()
-require('custom.surround').setup()
-require('custom.sudo').setup()
 require('custom.git').setup({
   get_git_root = Snacks.git.get_root,
   stage = { action = Snacks.picker.actions.git_stage },
@@ -51,7 +47,10 @@ require('custom.git').setup({
     max_summary_length = 30
   }
 })
-
+-- Edit
+require('custom.pairs').setup()
+require('custom.surround').setup()
+require('custom.sudo').setup()
 require('custom.md-paste-image').setup({
   img_dir = '_res',
   auto_paste = true,
