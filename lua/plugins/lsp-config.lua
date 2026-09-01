@@ -19,6 +19,19 @@ end
 -- - https://github.com/stevearc/conform.nvim#formatters
 -- - `:help conform-formatters`
 
+-- Basic
+extend({
+  mason = { 'prettier' },
+  conform = {
+    graphql = { 'prettier' },
+    handlebars = { 'prettier' },
+    json = { 'prettier' },
+    jsonc = { 'prettier' },
+    yaml = { 'prettier' },
+  },
+})
+
+
 -- Lua
 extend({
   mason = { 'lua-language-server' },
@@ -27,10 +40,36 @@ extend({
 
 -- Markdown
 extend({
-  mason = { 'marksman' },
-  lsp = { 'marksman' },
+  mason = { 'rumdl', 'prettier' },
+  lsp = { 'rumdl' },
+  conform = {
+    -- rumdl will be set automatically with lsp settings
+    -- markdown = { 'rumdl' }
+    -- markdown = { 'prettier' },
+  }
 })
-vim.filetype.add({ extension = { mdx = 'markdown.mdx', } })
+vim.filetype.add({ extension = { mdx = 'markdown.mdx' } })
+vim.lsp.config('rumdl', {
+  root_markers = { '.git', 'rumdl.toml', '.rumdl.toml', 'pyproject.toml' },
+  settings = {
+    rumdl = {
+      extendEnable = { 'MD060' },
+      -- MD013 Line length
+      -- MD033 Inline HTML
+      -- MD034 Bare URL used
+      -- MD045 Images should have alternate text
+      disable = { 'MD013', 'MD033', 'MD034', 'MD045' },
+      exclude = {
+        'node_modules',
+        'build',
+        'dist',
+        '*.tmp.md',
+      },
+      MD060 = { style = 'aligned' },
+      MD076 = { allowLooseContinuation = true }
+    }
+  }
+})
 
 -- Python
 extend({
@@ -49,15 +88,34 @@ extend({
 
 -- Front-end
 extend({
-  mason = { 'vtsls', 'css-lsp', 'prettier' },
-  lsp = { 'vtsls', 'cssls' },
+  mason = { 'tsc', 'css-lsp', 'prettier' },
+  lsp = { 'tsc', 'cssls' },
   conform = {
-    html = { 'prettier' },
     css = { 'prettier' },
+    html = { 'prettier' },
     javascript = { 'prettier' },
+    javascriptreact = { 'prettier' },
+    less = { 'prettier' },
+    scss = { 'prettier' },
     typescript = { 'prettier' },
+    typescriptreact = { 'prettier' },
     vue = { 'prettier' },
-    yaml = { 'prettier' },
+  }
+})
+
+-- Astro
+-- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#astro
+extend({
+  mason = { 'astro-language-server' },
+  lsp = { 'astro' },
+  conform = { astro = { 'prettier' } }
+})
+-- ts 6 is needed as they contain libs
+vim.lsp.config('astro', {
+  init_options = {
+    typescript = {
+      tsdk = vim.fn.stdpath('data') .. '/typescript-v6-compatible/node_modules/typescript/lib',
+    },
   },
 })
 
@@ -92,10 +150,10 @@ extend({
 })
 
 -- Shell
-extend({
-  mason = { 'shfmt', 'bash-language-server' },
-  lsp = { 'bashls' },
-})
+-- extend({
+--   mason = { 'shfmt', 'bash-language-server' },
+--   lsp = { 'bashls' },
+-- })
 
 -- Copilot
 -- extend({

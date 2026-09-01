@@ -1,5 +1,4 @@
 local lazy = require('libs.lazy')
-local utils = require('libs.utils')
 local config = require('plugins.lsp-config')
 
 -- [Dependencies] Load on run `Mason` command, key, and event
@@ -112,7 +111,7 @@ lazy.load({
   cmd = { 'ConformInfo' },
   keys = {
     { 'n', '<leader>cf', function()
-      require('conform').format({ async = true, lsp_format = 'fallback' })
+      require('conform').format({ async = true })
     end, { desc = 'Format file' } },
     { 'n', '<leader>pc', function() vim.cmd('ConformInfo') end, { desc = '[Panel] Conform' } }
   },
@@ -128,6 +127,7 @@ lazy.load({
 })
 
 -- [Diagnostic] Load after LSP attaches
+-- vim.diagnostic.config({ virtual_text = true })
 -- https://github.com/rachartier/tiny-inline-diagnostic.nvim/issues/112#issuecomment-2784644922
 lazy.load({
   plugin = 'https://github.com/rachartier/tiny-inline-diagnostic.nvim',
