@@ -40,7 +40,7 @@ extend({
 
 -- Markdown
 extend({
-  mason = { 'rumdl', 'prettier' },
+  mason = { 'rumdl', 'prettier', 'mpls' },
   lsp = { 'rumdl' },
   conform = {
     -- rumdl will be set automatically with lsp settings
@@ -50,15 +50,20 @@ extend({
 })
 vim.filetype.add({ extension = { mdx = 'markdown.mdx' } })
 vim.lsp.config('rumdl', {
-  root_markers = { '.git', 'rumdl.toml', '.rumdl.toml', 'pyproject.toml' },
+  root_markers = { '.git', 'rumdl.toml', '.rumdl.toml', '.config/rumdl.toml', 'pyproject.toml' },
   settings = {
     rumdl = {
-      extendEnable = { 'MD060' },
+      -- MD060 Makes significant formatting changes to existing tables
+      -- MD084 May trigger false positives in languages that use direction marks
+      -- MD088 Whether ASCII or typographic punctuation is correct is a style choice
+      extendEnable = { 'MD060', 'MD084', 'MD088' },
       -- MD013 Line length
       -- MD033 Inline HTML
       -- MD034 Bare URL used
+      -- MD040 Fenced code blocks should have a language specified
+      -- MD041 First line in a file should be a top-level heading
       -- MD045 Images should have alternate text
-      disable = { 'MD013', 'MD033', 'MD034', 'MD045' },
+      disable = { 'MD013', 'MD033', 'MD034', 'MD040', 'MD041', 'MD045' },
       exclude = {
         'node_modules',
         'build',
@@ -66,9 +71,28 @@ vim.lsp.config('rumdl', {
         '*.tmp.md',
       },
       MD060 = { style = 'aligned' },
-      MD076 = { allowLooseContinuation = true }
+      MD076 = { allowLooseContinuation = true },
+      MD088 = { allow = { 'U+201C', 'U+201D', 'U+2018', 'U+2019' } }
     }
   }
+})
+Snacks.keymap.set('n', '<localleader>pf', function()
+  vim.lsp.start({
+    name = 'mpls',
+    cmd = {
+      'mpls',
+      '--theme',
+      'ayu-dark',
+      '--enable-emoji',
+      '--enable-footnotes',
+    },
+    root_dir = vim.fs.root(0, { '.marksman.toml', '.git' })
+      or vim.fn.getcwd(),
+    filetypes = { 'markdown' },
+  })
+end, {
+  ft = 'markdown',
+  desc = '[preview] file',
 })
 
 -- Python
