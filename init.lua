@@ -15,7 +15,7 @@ require('config.autocmds')
 -- [Plugins]
 require('plugins.ui')
 require('plugins.tool')
-local Snacks = require('plugins.snacks')
+local Snacks = require('plugins.snacks-plugin')
 require('plugins.lsp')
 -- Input method swtich for non-English users
 -- require('plugins.im-select')

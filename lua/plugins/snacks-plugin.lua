@@ -16,7 +16,7 @@ Snacks.setup({
   -- https://github.com/folke/snacks.nvim/blob/main/docs/explorer.md
   explorer = { enabled = true },
   -- https://github.com/folke/snacks.nvim/blob/main/docs/image.md
-  image = { enabled = true },
+  image = { enabled = false },
   -- https://github.com/folke/snacks.nvim/blob/main/docs/indent.md
   indent = { enabled = true },
   -- https://github.com/folke/snacks.nvim/blob/main/docs/input.md
@@ -52,6 +52,10 @@ Snacks.setup({
       open = true, -- show open fold icons
       git_hl = true, -- use Git Signs hl for fold icons
     },
+  },
+  -- https://github.com/folke/snacks.nvim/blob/main/docs/scratch.md
+  scratch = {
+    win = { border = 'single' },
   },
 
   -- https://github.com/folke/snacks.nvim/blob/main/docs/picker.md
@@ -368,7 +372,7 @@ local key = {
         },
       })
     end,
-    desc = 'Neovim News',
+    desc = 'Neovim news',
   }
 }
 
