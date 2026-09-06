@@ -27,7 +27,7 @@ function M.open()
 
   local tmpfile = vim.fn.tempname()
   local win = require('snacks').win({
-    title = 'Yazi',
+    title = ' Yazi ',
     border = 'single',
     backdrop = true,
     minimal = true,
