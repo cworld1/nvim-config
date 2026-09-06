@@ -76,13 +76,13 @@ vim.lsp.config('rumdl', {
     }
   }
 })
-Snacks.keymap.set('n', '<localleader>pf', function()
+Snacks.keymap.set('n', '<localleader>cp', function()
   vim.lsp.start({
     name = 'mpls',
     cmd = {
       'mpls',
       '--theme',
-      'ayu-dark',
+      'dark',
       '--enable-emoji',
       '--enable-footnotes',
     },
@@ -92,7 +92,7 @@ Snacks.keymap.set('n', '<localleader>pf', function()
   })
 end, {
   ft = 'markdown',
-  desc = '[preview] file',
+  desc = '[LSP] Preview file',
 })
 
 -- Python
