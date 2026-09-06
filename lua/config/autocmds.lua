@@ -27,10 +27,14 @@ autocmd('FileType', {
   end,
 })
 
--- Highlight on yank
-autocmd({ 'TextYankPost', 'TextPutPost' }, {
-  group = augroup('HighlightOnYankAndPaste', { clear = true }),
-  callback = function() vim.hl.hl_op() end,
+-- Highlight on yank and paste
+vim.api.nvim_create_autocmd({ 'TextYankPost', 'TextPutPost' }, {
+  group = vim.api.nvim_create_augroup('HighlightOnYankAndPaste', {
+    clear = true,
+  }),
+  callback = function()
+    vim.hl.hl_op()
+  end,
   desc = 'Highlight text when yank and paste',
 })
 
