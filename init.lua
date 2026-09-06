@@ -47,6 +47,7 @@ require('custom.git').setup({
     max_summary_length = 30
   }
 })
+require('custom.yazi').setup()
 -- Edit
 require('custom.pairs').setup()
 require('custom.surround').setup()
