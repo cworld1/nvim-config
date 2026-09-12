@@ -40,7 +40,7 @@ extend({
 
 -- Markdown
 extend({
-  mason = { 'rumdl', 'prettier', 'mpls' },
+  mason = { 'rumdl', 'mpls' },
   -- lsp = { 'rumdl' },
   conform = {
     -- rumdl will be set automatically with lsp settings
