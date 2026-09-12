@@ -41,7 +41,7 @@ extend({
 -- Markdown
 extend({
   mason = { 'rumdl', 'prettier', 'mpls' },
-  lsp = { 'rumdl' },
+  -- lsp = { 'rumdl' },
   conform = {
     -- rumdl will be set automatically with lsp settings
     -- markdown = { 'rumdl' }
@@ -50,32 +50,39 @@ extend({
 })
 vim.filetype.add({ extension = { mdx = 'markdown.mdx' } })
 vim.lsp.config('rumdl', {
+  cmd = { 'rumdl', 'server', '--verbose' },
+  filetypes = { 'markdown' },
   root_markers = { '.git', 'rumdl.toml', '.rumdl.toml', '.config/rumdl.toml', 'pyproject.toml' },
   settings = {
     rumdl = {
-      -- MD060 Makes significant formatting changes to existing tables
-      -- MD084 May trigger false positives in languages that use direction marks
-      -- MD088 Whether ASCII or typographic punctuation is correct is a style choice
-      extendEnable = { 'MD060', 'MD084', 'MD088' },
       -- MD013 Line length
       -- MD033 Inline HTML
       -- MD034 Bare URL used
       -- MD040 Fenced code blocks should have a language specified
       -- MD041 First line in a file should be a top-level heading
       -- MD045 Images should have alternate text
-      disable = { 'MD013', 'MD033', 'MD034', 'MD040', 'MD041', 'MD045' },
-      exclude = {
-        'node_modules',
-        'build',
-        'dist',
-        '*.tmp.md',
-      },
-      MD060 = { style = 'aligned' },
-      MD076 = { allowLooseContinuation = true },
-      MD088 = { allow = { 'U+201C', 'U+201D', 'U+2018', 'U+2019' } }
+      disableRules = { 'MD013', 'MD033', 'MD034', 'MD040', 'MD041', 'MD045' },
+      settings = {
+        -- MD060 Makes significant formatting changes to existing tables
+        -- MD084 May trigger false positives in languages that use direction marks
+        -- MD088 Whether ASCII or typographic punctuation is correct is a style choice
+        -- MD089 CJK spacing
+        extendEnable = { 'MD060', 'MD084', 'MD088', 'MD089' },
+        exclude = {
+          'node_modules',
+          'build',
+          'dist',
+          '*.tmp.md',
+        },
+        MD032 = { allowLazyContinuation = false },
+        MD060 = { enabled = true, style = 'aligned' },
+        MD076 = { allowLooseContinuation = true },
+        MD088 = { enabled = true, allow = { 'U+201C', 'U+201D', 'U+2018', 'U+2019' } }
+      }
     }
   }
 })
+vim.lsp.enable('rumdl')
 Snacks.keymap.set('n', '<localleader>cp', function()
   vim.lsp.start({
     name = 'mpls',
