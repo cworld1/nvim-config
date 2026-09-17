@@ -29,7 +29,7 @@ function M.open()
   local win = require('snacks').win({
     title = ' Yazi ',
     border = 'single',
-    backdrop = true,
+    backdrop = 100,
     minimal = true,
   })
   vim.fn.jobstart({ 'yazi', '--chooser-file', tmpfile }, {
