@@ -4,7 +4,7 @@ local augroup = vim.api.nvim_create_augroup
 -- Spelling check for docs
 autocmd('FileType', {
   group = augroup('TextSpellCheck', { clear = true }),
-  pattern = { 'markdown', 'text', 'gitcommit', 'plaintex', 'typst' },
+  pattern = { 'markdown', 'text', 'gitcommit', 'plaintext', 'typst' },
   callback = function()
     vim.opt_local.wrap = true
     -- vim.opt.spelllang = 'en_us'
