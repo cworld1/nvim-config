@@ -83,7 +83,7 @@ vim.lsp.config('rumdl', {
   }
 })
 vim.lsp.enable('rumdl')
-Snacks.keymap.set('n', '<localleader>cp', function()
+Snacks.keymap.set('n', '<localleader>co', function()
   vim.lsp.start({
     name = 'mpls',
     cmd = {
@@ -99,7 +99,7 @@ Snacks.keymap.set('n', '<localleader>cp', function()
   })
 end, {
   ft = 'markdown',
-  desc = '[LSP] Preview file',
+  desc = '[Markdown] Preview file',
 })
 
 -- Python
