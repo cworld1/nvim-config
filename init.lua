@@ -52,6 +52,6 @@ require('custom.yazi').setup()
 require('custom.pairs').setup()
 require('custom.surround').setup()
 require('custom.sudo').setup()
-require('custom.md-paste-image').setup({
+require('custom.md-paste').setup({
   img_dir = '_res/%:t:r',
 })
